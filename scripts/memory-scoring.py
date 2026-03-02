@@ -14,7 +14,7 @@ MEMORY_DIR = Path.home() / ".openclaw" / "workspace" / "memory"
 KEYWORD_SCORES = [
     (r'账号 | 密码 | 服务器|API.?Key|smtp|imap|token|secret|credential', 15),
     (r'bitwarden|vault|auth|login|oauth', 13),
-    (r'邮箱 | 邮件|email|silvermoon@', 12),
+    (r'邮箱 | 邮件|email', 12),
     (r'配置 | 设置|config|setup|部署 | 安装', 9),
     (r'安全 | 规则 | 策略|security|policy', 9),
     (r'决策|决定|选择|decision', 8),

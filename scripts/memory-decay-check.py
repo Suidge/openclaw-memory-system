@@ -127,7 +127,7 @@ def check_memory_decay():
 
 def print_report(results):
     """打印报告"""
-    print("\n🌙 银月记忆衰减检查报告")
+    print("\n 记忆衰减检查报告")
     print("=" * 60)
     print(f"检查时间：{results['check_time']}")
     print(f"总记忆条目：{results['summary']['total_entries']}")
@@ -156,7 +156,7 @@ def print_report(results):
 
 def main():
     """主函数"""
-    print("🌙 银月开始检查记忆衰减...\n")
+    print(" 开始检查记忆衰减...\n")
     
     results = check_memory_decay()
     print_report(results)

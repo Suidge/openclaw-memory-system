@@ -49,7 +49,7 @@ cp instructions/*.md ~/.openclaw/workspace/scripts/
 |------|--------|------|
 | 15 | 账号、密码、服务器、API Key、token、secret | ❌ 永不衰减 |
 | 13 | bitwarden、vault、auth、login、oauth | ❌ 永不衰减 |
-| 12 | 邮箱、邮件、silvermoon@ | ❌ 永不衰减 |
+| 12 | 邮箱、邮件、email | ❌ 永不衰减 |
 | 9 | 配置、设置、安全、规则、策略 | ✅ 正常衰减 |
 | 8 | 决策、决定、模型、agent、cron | ✅ 正常衰减 |
 | 7 | 技能、工具 | ✅ 正常衰减 |
@@ -148,7 +148,7 @@ effective_score = importance × e^(-0.01×days_old)
 
 ### memory-decay-check.py
 ```
-🌙 银月记忆衰减检查报告
+ 记忆衰减检查报告
 ============================================================
 总记忆条目：14
 核心记忆（受保护）: 2
@@ -178,4 +178,4 @@ Neo Shi (@neoshi2346)
 
 ---
 
-**银月制作** 🌙 | 2026-03-02
+**制作**  | 2026-03-02
