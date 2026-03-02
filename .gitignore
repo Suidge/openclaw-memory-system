@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# OpenClaw
+*.json
+*.md
+!README.md
+!LICENSE
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
