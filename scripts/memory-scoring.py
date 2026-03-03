@@ -14,7 +14,7 @@ MEMORY_DIR = Path.home() / ".openclaw" / "workspace" / "memory"
 KEYWORD_SCORES = [
     (r'账号 | 密码 | 服务器|API.?Key|smtp|imap|token|secret|credential', 15),
     (r'bitwarden|vault|auth|login|oauth', 13),
-    (r'邮箱 | 邮件|email', 12),
+    (r'邮箱 | 邮件|email|silvermoon@', 12),
     (r'配置 | 设置|config|setup|部署 | 安装', 9),
     (r'安全 | 规则 | 策略|security|policy', 9),
     (r'决策|决定|选择|decision', 8),
@@ -53,16 +53,18 @@ def score_file_entries(filepath: Path) -> list:
     matches = list(re.finditer(pattern, content))
     
     scored_entries = []
-    for match in matches:
+    # 倒序遍历，避免字符串长度改变影响后续 match 的 index
+    for match in reversed(matches):
         title = match.group(1).strip()
         
         # 检查是否已有评分
-        start_pos = match.end()
+        start_pos = int(match.end())
         next_match = re.search(r'\n#{3,4}', content[start_pos:])
-        end_pos = start_pos + next_match.start() if next_match else len(content)
+        end_pos = start_pos + int(next_match.start()) if next_match else len(content)
         entry_content = content[start_pos:end_pos]
         
-        if '<!-- importance:' in entry_content:
+        # 检查标题或者内容里有没有评分标签
+        if '<!-- importance:' in title or '<!-- importance:' in entry_content:
             continue  # 跳过已有评分的条目
         
         # 计算评分
@@ -70,8 +72,16 @@ def score_file_entries(filepath: Path) -> list:
         
         # 在标题后插入评分
         new_title = f"{title} <!-- importance: {importance} -->"
-        content = content.replace(title, new_title, 1)
+        
+        # 精确替换该 match 位置的字符串
+        start_idx = int(match.start(1))
+        end_idx = int(match.end(1))
+        content = content[:start_idx] + new_title + content[end_idx:]
+        
         scored_entries.append(f"  - {title}: importance={importance}")
+    
+    # 恢复原序记录
+    scored_entries.reverse()
     
     # 写回文件
     with open(filepath, 'w', encoding='utf-8') as f:
