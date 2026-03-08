@@ -44,7 +44,7 @@
 #### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/Suidge/openclaw-memory-system.git
+git clone https://github.com/Suidge/openclaw-memory-bionics-system.git
 cd openclaw-memory-system
 ```
 
@@ -407,8 +407,8 @@ MIT License
 
 ## 📧 联系方式
 
-- **项目主页**: https://github.com/Suidge/openclaw-memory-system
-- **问题反馈**: https://github.com/Suidge/openclaw-memory-system/issues
+- **项目主页**: https://github.com/Suidge/openclaw-memory-bionics-system
+- **问题反馈**: https://github.com/Suidge/openclaw-memory-bionics-system/issues
 - **OpenClaw 文档**: https://docs.openclaw.ai
 
 ---
