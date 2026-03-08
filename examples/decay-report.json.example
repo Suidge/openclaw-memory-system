@@ -1,0 +1,28 @@
+{
+  "check_time": "2026-03-02T21:51:53.507767",
+  "total_entries": 14,
+  "core_memory_count": 2,
+  "normal_count": 12,
+  "cleanup_candidates": [],
+  "protected_entries": [
+    {
+      "title": "#### 2026-02-25",
+      "importance": 13,
+      "days_old": 5,
+      "effective_score": 13
+    },
+    {
+      "title": "#### 2026-02-18",
+      "importance": 12,
+      "days_old": 12,
+      "effective_score": 12
+    }
+  ],
+  "summary": {
+    "total_entries": 14,
+    "core_memory_protected": 2,
+    "normal_memory": 12,
+    "cleanup_candidates_count": 0,
+    "cleanup_candidates": []
+  }
+}
