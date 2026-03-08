@@ -3,7 +3,7 @@
 **版本**: v2.1  
 **最后更新**: 2026-03-08  
 **许可证**: MIT  
-**作者**: OpenClaw Memory System Contributors
+**作者**: Neo Shi 和他亲密忠诚的助手银月
 
 ---
 
