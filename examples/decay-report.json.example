@@ -1,28 +1,36 @@
 {
-  "check_time": "2026-03-02T21:51:53.507767",
-  "total_entries": 14,
-  "core_memory_count": 2,
-  "normal_count": 12,
-  "cleanup_candidates": [],
-  "protected_entries": [
+  "check_time": "2026-03-08T02:00:00+08:00",
+  "total_entries": 32,
+  "core_memory_count": 5,
+  "normal_count": 27,
+  "forgotten_entries": [
     {
-      "title": "#### 2026-02-25",
-      "importance": 13,
-      "days_old": 5,
-      "effective_score": 13
-    },
-    {
-      "title": "#### 2026-02-18",
-      "importance": 12,
-      "days_old": 12,
-      "effective_score": 12
+      "title": "2026-02-20 某条普通记录",
+      "importance": 1,
+      "days_old": 17,
+      "is_core_memory": false
     }
   ],
+  "expired_files": [
+    {
+      "filename": "2026-01-15.md",
+      "filepath": "/path/to/memory/2026-01-15.md",
+      "days_old": 53,
+      "reason": "file age (53 days) > threshold (30 days)"
+    }
+  ],
+  "protected_entries": [],
   "summary": {
-    "total_entries": 14,
-    "core_memory_protected": 2,
-    "normal_memory": 12,
-    "cleanup_candidates_count": 0,
-    "cleanup_candidates": []
+    "total_entries": 32,
+    "core_memory_protected": 5,
+    "normal_memory": 27,
+    "forgotten_entries_count": 1,
+    "expired_files_count": 1,
+    "forgotten_entries": [
+      "2026-02-20 某条普通记录"
+    ],
+    "expired_files": [
+      "2026-01-15.md"
+    ]
   }
 }
