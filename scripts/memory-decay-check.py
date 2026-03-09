@@ -6,7 +6,7 @@
 遗忘阈值：importance < 2
 核心记忆（≥11 分）永不遗忘
 
-作者：OpenClaw Memory System
+作者：银月
 版本：2.0
 最后更新：2026-03-08
 """
@@ -46,7 +46,7 @@ DATE_PATTERN = re.compile(r'(\d{4}-\d{2}-\d{2})')
 WEEK_PATTERN = re.compile(r'(\d{4}-W\d{2})')
 
 # 时区常量
-TZ_SHANGHAI = TZ_SHANGHAI
+TZ_SHANGHAI = timezone(timedelta(hours=8))
 
 # ============================================================================
 # 日志配置
@@ -328,7 +328,7 @@ def check_forgotten_memories(dry_run: bool = False) -> Dict[str, Any]:
 
 def print_report(results: Dict[str, Any], args: argparse.Namespace) -> None:
     """打印控制台报告（包含遗忘条目和过期文件）"""
-    print("\n🌙 OpenClaw Memory System记忆遗忘检查报告")
+    print("\n🌙 银月记忆遗忘检查报告")
     print("=" * 60)
     print(f"检查时间：{results['check_time']}")
     print(f"总记忆条目：{results['summary']['total_entries']}")
@@ -374,7 +374,7 @@ def print_report(results: Dict[str, Any], args: argparse.Namespace) -> None:
 def parse_args() -> argparse.Namespace:
     """解析命令行参数"""
     parser = argparse.ArgumentParser(
-        description='🌙 OpenClaw Memory System记忆遗忘检查工具',
+        description='🌙 银月记忆遗忘检查工具',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 示例:
@@ -395,7 +395,7 @@ def main() -> int:
     args = parse_args()
     setup_logging(args.verbose)
     
-    logging.info("🌙 OpenClaw Memory System开始检查记忆遗忘...")
+    logging.info("🌙 银月开始检查记忆遗忘...")
     
     results = check_forgotten_memories(dry_run=args.dry_run)
     print_report(results, args)

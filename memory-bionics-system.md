@@ -1,10 +1,10 @@
-# Memory Bionics System Specification (v2.1)
+# Memory Bionics System Specification (v2.2)
 
 **记忆仿生系统机制说明**
 
-**文档版本**: 2.1  
+**文档版本**: 2.2  
 **最后更新**: 2026-03-08  
-**作者**: Neo Shi 和他亲密忠诚的助手银月  
+**作者**: 银月  
 **用途**: 完整阐述 OpenClaw 记忆仿生系统的机制、逻辑、相关文件，供运维人员参考  
 **文件位置**: `~/.openclaw/workspace/memory-bionics-system.md`
 
@@ -19,7 +19,7 @@
 1. **遗忘曲线**：不重要的记忆随时间逐渐衰减
 2. **强化机制**：频繁使用的记忆会被加强（"越用越重要"）
 3. **核心记忆**：最重要的记忆永不遗忘
-4. **动态评分**：每天重新评估所有记忆的价值
+4. **分层维护**：先对日常记忆日志评分，再由维护流程吸收高价值条目进入主记忆
 
 ### 1.2 核心概念
 
@@ -59,10 +59,10 @@
 | 类型 | 位置 | 评分 | 衰减 | 说明 |
 |------|------|------|------|------|
 | **核心记忆** | MEMORY.md | ≥11 分 | ❌ 永不 | 凭证、配置、重要决策 |
-| **重要记忆** | MEMORY.md | 7-10 分 | ✅ 温和 | 配置、技能、经验教训 |
-| **普通记忆** | MEMORY.md | 4-6 分 | ✅ 正常 | 日常日志、一般事项 |
-| **琐碎记忆** | MEMORY.md | 1-3 分 | ✅ 加速 | 闲聊、测试 |
-| **日常记忆** | memory/*.md | 1-15 分 | ❌ 不衰减 | 待提取到 MEMORY.md，超过 30 天自动清理 |
+| **重要记忆** | MEMORY.md | 7-10 分 | ✅ 温和 | 已吸收进主记忆的重要事项 |
+| **普通记忆** | MEMORY.md | 4-6 分 | ✅ 正常 | 已吸收进主记忆的一般事项 |
+| **琐碎记忆** | MEMORY.md | 1-3 分 | ✅ 加速 | 已吸收进主记忆但价值较低的内容 |
+| **日常记忆** | memory/*.md | 1-15 分 | ❌ 不衰减 | 先评分，后由维护任务按规则筛选吸收进 MEMORY.md |
 
 ---
 
@@ -77,7 +77,7 @@
 KEYWORD_SCORES = [
     (r'账号 | 密码 | 服务器|API.?Key|smtp|imap|token|secret|credential', 15),
     (r'bitwarden|vault|auth|login|oauth', 9),
-    (r'邮箱 | 邮件|email|your-email@', 12),
+    (r'邮箱 | 邮件|email|silvermoon@', 12),
     (r'配置 | 设置|config|setup|部署 | 安装', 9),
     (r'安全 | 规则 | 策略|security|policy', 9),
     (r'决策|决定|选择|decision', 8),
@@ -102,34 +102,20 @@ def calculate_keyword_score(content):
 - ✅ 不计算加分
 - ✅ 一次性执行
 
-### 3.2 每日重评（MEMORY.md）
+### 3.2 主记忆吸收与后续维护（MEMORY.md）
 
-每天凌晨 02:00，系统会为 MEMORY.md 动态记忆区的所有条目**重新评分**：
+每天凌晨 02:00 的维护流程中，系统会从 `memory/*.md` 中读取已评分条目，并按规则将高价值内容吸收入 `MEMORY.md`。
 
-```python
-def calculate_new_importance(current_importance, days_old, usage_bonus):
-    # 核心记忆（≥11 分）：只加分，不衰减
-    if current_importance >= 11:
-        return min(99, current_importance + int(usage_bonus))
-    
-    # 普通记忆（<11 分）：加分 - 衰减
-    if current_importance <= 3:
-        decay_rate = 0.03  # 加速衰减
-    elif current_importance <= 6:
-        decay_rate = 0.02  # 正常衰减
-    else:
-        decay_rate = 0.01  # 温和衰减
-    
-    time_decay = max(0, (current_importance - 5) * decay_rate * days_old)
-    new_score = current_importance + usage_bonus - time_decay
-    return max(1, min(99, int(new_score)))
-```
+**当前吸收规则**：
+- 得分 **> 7** 的条目，进入 `MEMORY.md`
+- 其余条目保留在 `memory/` 中作为短期记忆日志
 
-**特点**：
-- ✅ 基于"昨天的评分"（不是原始分）
-- ✅ 加上使用加分
-- ✅ 减去时间衰减
-- ✅ 每日执行
+吸收进入 `MEMORY.md` 后，这些条目在主记忆体系中按既定规则参与后续维护与遗忘检查。
+
+**说明**：
+- `memory-scoring.py` 的职责是给 `memory/*.md` 条目打分
+- `MEMORY.md` 的整理与吸收由后续维护任务负责
+- 本版文档以当前代码逻辑为准，不将 `MEMORY.md` 描述为由 `memory-scoring.py` 直接重评
 
 ---
 
@@ -424,6 +410,7 @@ git push
 | 1.0 | 2026-03-02 | 初始版本（一次性评分 + 衰减检查） |
 | 2.0 | 2026-03-08 | 每日重评 + 加分机制 + 遗忘机制 |
 | 2.1 | 2026-03-08 | 添加 memory/ 文件 30 天过期检查 |
+| 2.2 | 2026-03-08 | 文档口径修订：明确评分脚本只处理 `memory/*.md`，主记忆吸收由维护任务负责；衰减逻辑口径统一为代码版 |
 
 ---
 

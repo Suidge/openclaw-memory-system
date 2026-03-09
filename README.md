@@ -1,519 +1,302 @@
-# OpenClaw Memory System (记忆仿生系统)
+# OpenClaw Memory System
 
-**版本**: v2.1  
-**最后更新**: 2026-03-08  
-**许可证**: MIT  
-**作者**: Neo Shi 和他亲密忠诚的助手银月
+一个为 OpenClaw 设计的**仿生记忆系统**：让 AI 助手不只是“存记忆”，而是像人一样对记忆做**评分、筛选、沉淀、遗忘**。
 
----
+> 核心思想：**不是记住一切，而是持续判断什么值得留下。**
 
-## 🧠 仿生记忆结构设计
+## 当前状态
 
-> **"真正的智能不在于记住一切，而在于知道什么值得记住。"**
-
-本系统灵感来源于人类海马体的记忆巩固机制，通过模拟生物记忆的三大核心原理，为 AI 助手构建了一个**会遗忘、会强化、会进化**的记忆系统。
-
-### 🧬 设计原理
-
-#### 1. 突触可塑性 (Synaptic Plasticity)
-
-人类大脑通过**长时程增强 (LTP)** 和**长时程抑制 (LTD)** 机制调节突触强度。本系统通过**动态评分算法**实现同样的效果：
-
-```
-新评分 = 基础分 + 使用加分 - 时间衰减
-
-其中：
-- 使用加分 = 搜索命中×0.1 + 引用次数×0.2 (上限 +10 分)
-- 时间衰减 = 当前分数 × 衰减率 × 存在天数
-```
-
-**越常用的记忆越强，越久不用的记忆越弱** —— 这正是人类学习的本质。
-
-#### 2. 遗忘曲线 (Ebbinghaus Forgetting Curve)
-
-德国心理学家艾宾浩斯发现：记忆在最初几天衰减最快，之后逐渐平缓。本系统通过**分级衰减率**模拟这一现象：
-
-| 记忆类型 | 评分范围 | 衰减率 | 生物学对应 |
-|---------|---------|--------|-----------|
-| **琐碎记忆** | 1-3 分 | 3%/天 | 短期记忆（秒级遗忘） |
-| **普通记忆** | 4-6 分 | 2%/天 | 工作记忆（小时级遗忘） |
-| **重要记忆** | 7-10 分 | 1%/天 | 长期记忆（天级遗忘） |
-| **核心记忆** | ≥11 分 | 0%/天 | 永久记忆（终身不忘） |
-
-#### 3. 记忆巩固 (Memory Consolidation)
-
-人类在睡眠中将短期记忆转化为长期记忆。本系统通过**每日凌晨重评机制**实现同样的功能：
-
-```
-每天凌晨 02:00 自动执行：
-1. 分析白天的使用日志（搜索命中、引用次数）
-2. 为所有记忆重新评分（基础分 + 加分 - 衰减）
-3. 标记达到遗忘阈值的记忆（评分 < 2）
-4. 生成遗忘清单等待主人确认
-```
-
-### 🧠 系统架构
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    日常记忆层 (memory/)                   │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
-│  │ 2026-03-07  │  │ 2026-03-08  │  │ 2026-W10    │      │
-│  │ 日常日志    │  │ 日常日志    │  │ 周报        │      │
-│  │ 首次评分    │  │ 首次评分    │  │ 首次评分    │      │
-│  │ 不衰减      │  │ 不衰减      │  │ 不衰减      │      │
-│  │ >30 天清理   │  │ >30 天清理   │  │ >30 天清理   │      │
-│  └─────────────┘  └─────────────┘  └─────────────┘      │
-│                        ↓ 每日提取                          │
-│              ┌───────────────────────┐                   │
-│              │   记忆提取与评分引擎    │                   │
-│              │  (memory-scoring.py)  │                   │
-│              └───────────────────────┘                   │
-│                        ↓ 提炼                             │
-├─────────────────────────────────────────────────────────┤
-│                   核心记忆层 (MEMORY.md)                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
-│  │ 静态配置区  │  │ 动态记忆区  │  │ 遗忘检查    │      │
-│  │ 永不衰减    │  │ 每日重评    │  │ 评分<2 清理  │      │
-│  │ 主人信息    │  │ 加分 - 衰减   │  │ 等待确认    │      │
-│  │ 系统配置    │  │ 核心≥11 分   │  │ 使用 trash  │      │
-│  │ API 凭证     │  │ 普通<11 分   │  │ 可恢复      │      │
-│  └─────────────┘  └─────────────┘  └─────────────┘      │
-└─────────────────────────────────────────────────────────┘
-                        ↕ 双向追踪
-┌─────────────────────────────────────────────────────────┐
-│                   使用追踪层 (usage-log.json)             │
-│  {                                                        │
-│    "条目 1": {"search_hits": 12, "citations": 3,        │
-│               "bonus_score": 1.8},                       │
-│    "条目 2": {"search_hits": 5, "citations": 0,         │
-│               "bonus_score": 0.5}                        │
-│  }                                                        │
-└─────────────────────────────────────────────────────────┘
-```
-
-### 🧬 进化机制
-
-系统具有**自我进化**能力，通过以下三个维度持续优化：
-
-1. **使用频率追踪**: 每次搜索命中 (+0.1)、每次引用 (+0.2)
-2. **时间衰减自动计算**: 根据记忆类型自动选择衰减率
-3. **遗忘阈值动态调整**: 可根据实际需求调整清理标准
+- **稳定版本思路**：v2.2
+- **仓库用途**：沉淀可复用的记忆系统脚本、规则与设计文档
+- **适用场景**：
+  - OpenClaw 工作区中的 Markdown 记忆文件
+  - 每日记忆日志（daily memory）
+  - 主记忆文件（`MEMORY.md`）
+  - 需要“会遗忘、会强化、会提炼”的 AI 助手
 
 ---
 
-## 📖 系统概述
+## 系统目标
 
-这是一个模拟人类记忆"遗忘曲线"和"强化机制"的记忆管理系统，专为 OpenClaw AI 助手设计。
+本项目解决的不是“如何把更多内容塞进上下文”，而是：
 
-### 核心特性
-
-1. **遗忘曲线**: 不重要的记忆随时间逐渐衰减
-2. **强化机制**: 频繁使用的记忆会被加强（"越用越重要"）
-3. **核心记忆**: 最重要的记忆永不遗忘
-4. **动态评分**: 每天重新评估所有记忆的价值
-5. **自动清理**: 低价值记忆自动标记待清理
-
-### 记忆分层
-
-| 类型 | 评分范围 | 衰减规则 | 说明 |
-|------|---------|---------|------|
-| **核心记忆** | ≥11 分 | ❌ 永不衰减 | 凭证、配置、重要决策 |
-| **重要记忆** | 7-10 分 | ✅ 温和衰减 (1%/天) | 配置、技能、经验教训 |
-| **普通记忆** | 4-6 分 | ✅ 正常衰减 (2%/天) | 日常日志、一般事项 |
-| **琐碎记忆** | 1-3 分 | ✅ 加速衰减 (3%/天) | 闲聊、测试 |
-| **日常记忆** | 1-15 分 | ❌ 不衰减 | 待提取到主记忆，超过 30 天自动清理 |
+1. **如何对新记忆做首次评分**
+2. **如何从日常记忆中筛出真正高价值内容**
+3. **如何把高价值内容沉淀到主记忆**
+4. **如何对低价值内容逐步遗忘并清理**
+5. **如何通过搜索命中 / 引用使用形成强化机制**
 
 ---
 
-## 🚀 快速开始
+## 设计原则
+
+### 1. Markdown 是真相源
+系统不依赖专有数据库作为主存储。
+
+- `memory/YYYY-MM-DD.md`：日常记忆原始池
+- `MEMORY.md`：主记忆沉淀层
+
+### 2. 日常记忆与主记忆分层
+- **daily memory**：原始、细碎、当日发生的事项
+- **main memory**：经筛选后的长期记忆
+
+### 3. 记忆不是永久累积，而是动态治理
+- 新记忆会被评分
+- 常用记忆会被强化
+- 低价值记忆会被遗忘
+- 真正重要的核心记忆长期保留
+
+### 4. 先稳定，再扩展
+v2.2 重点是把 Markdown 记忆链路跑稳。更强的检索 / 多模态 / OpenViking 集成属于后续增强，不是当前稳定版的前提。
+
+---
+
+## 架构概览
+
+```text
+memory/YYYY-MM-DD.md
+    ↓
+首次评分（memory-scoring.py）
+    ↓
+高分条目筛选（当前规则：> 7）
+    ↓
+吸收进入 MEMORY.md
+    ↓
+遗忘检查（memory-decay-check.py）
+    ↓
+待确认清理
+```
+
+### 核心分层
+
+| 层级 | 文件 | 作用 |
+|------|------|------|
+| 日常记忆层 | `memory/*.md` | 原始记忆池，按条目首次评分 |
+| 主记忆层 | `MEMORY.md` | 长期沉淀记忆，供检索与回忆 |
+| 强化层 | `memory/usage-log.json` | 记录搜索命中 / 引用使用 |
+| 清理层 | `memory/decay-report.json` | 输出遗忘候选与过期文件 |
+
+---
+
+## v2.2 工作流（当前推荐）
+
+### 任务 0：分析使用日志
+脚本：`memory-usage-tracker.py --analyze`
+
+作用：
+- 汇总 search hit / citation 记录
+- 为后续记忆强化提供参考
+
+### 任务 1：为 daily memory 条目评分
+脚本：`memory-scoring.py`
+
+作用：
+- 扫描 `memory/*.md`
+- 为尚未评分的条目首次评分
+- **不直接重评 `MEMORY.md`**
+
+### 任务 2：吸收高分条目
+由维护流程执行：
+- 读取已评分条目
+- 当前规则：**得分 > 7** 的条目吸收入 `MEMORY.md`
+
+### 任务 3：遗忘检查
+脚本：`memory-decay-check.py`
+
+作用：
+- 检查 `MEMORY.md` 中是否有低于阈值的条目
+- 检查 `memory/` 中是否有超过 30 天的过期文件
+- 生成待确认清单
+
+### 任务 4：确认后清理
+原则：
+- 先生成报告
+- 人工确认
+- 使用可恢复方式清理（如 `trash`）
+
+---
+
+## 评分机制（v2.2）
+
+### 1. 日常记忆：首次评分
+`memory/*.md` 中的条目按“标题 + 正文”首次评分。
+
+### 2. 当前规则的方向
+- **系统升级 / 核心修复 / 机制调整**：倾向高分
+- **普通技术事项 / 工作记录**：中等分
+- **纯文档整理 / 汇报 / 草案**：中低分，但不至于被一刀切压死
+
+### 3. 当前吸收阈值
+- **`> 7`** → 候选吸收进 `MEMORY.md`
+
+### 4. 为什么这样设计
+这是一个刻意保守的阈值：
+- 防止主记忆被日常碎片污染
+- 让真正有长期价值的事项自然浮上来
+
+---
+
+## 遗忘机制
+
+### 对 `MEMORY.md`
+- 当条目评分低于阈值时，进入遗忘候选
+- 核心记忆长期保留
+
+### 对 `memory/*.md`
+- daily memory 作为原始池，不做复杂重评
+- 超过一定时长的历史文件可进入清理候选
+
+### 核心原则
+- **先列清单，再清理**
+- **人工确认优先于自动删除**
+
+---
+
+## 文件结构
+
+```text
+openclaw-memory-system/
+├── README.md
+├── memory-bionics-system.md
+├── scripts/
+│   ├── memory-scoring.py
+│   ├── memory-decay-check.py
+│   ├── memory-usage-tracker.py
+│   └── daily-memory-maintenance-instructions.md
+└── examples/
+    └── decay-report.json.example
+```
+
+部署到 OpenClaw 工作区后的典型结构：
+
+```text
+~/.openclaw/workspace/
+├── MEMORY.md
+├── memory/
+│   ├── YYYY-MM-DD.md
+│   ├── usage-log.json
+│   └── decay-report.json
+└── scripts/
+    ├── memory-scoring.py
+    ├── memory-decay-check.py
+    ├── memory-usage-tracker.py
+    └── daily-memory-maintenance-instructions.md
+```
+
+---
+
+## 安装与使用
 
 ### 环境要求
-
 - Python 3.10+
-- OpenClaw v2026.3+
-- 无额外依赖（仅使用 Python 标准库）
+- OpenClaw 工作区
+- 仅依赖 Python 标准库
 
 ### 安装步骤
-
-#### 1. 克隆仓库
 
 ```bash
 git clone https://github.com/Suidge/openclaw-memory-system.git
 cd openclaw-memory-system
-```
 
-#### 2. 复制脚本到 OpenClaw 工作区
-
-```bash
-# 假设 OpenClaw 工作区在 ~/.openclaw/workspace
 cp scripts/*.py ~/.openclaw/workspace/scripts/
 cp scripts/*.md ~/.openclaw/workspace/scripts/
 cp memory-bionics-system.md ~/.openclaw/workspace/
 ```
 
-#### 3. 配置 Cron Job（可选）
-
-编辑 `~/.openclaw/cron/jobs.json`，添加每日记忆维护任务：
-
-```json
-{
-  "id": "daily-memory-maintenance",
-  "name": "每日记忆维护",
-  "enabled": true,
-  "schedule": {
-    "kind": "cron",
-    "expr": "0 2 * * *",
-    "tz": "Asia/Shanghai"
-  },
-  "payload": {
-    "kind": "agentTurn",
-    "message": "执行每日记忆维护任务。详细指引：~/.openclaw/workspace/scripts/daily-memory-maintenance-instructions.md"
-  },
-  "delivery": {
-    "mode": "announce",
-    "channel": "feishu",
-    "to": "user:YOUR_USER_ID"
-  }
-}
-```
-
-#### 4. 验证安装
+### 本地验证
 
 ```bash
-# 测试评分脚本
 python3 ~/.openclaw/workspace/scripts/memory-scoring.py
-
-# 测试遗忘检查（干跑模式）
 python3 ~/.openclaw/workspace/scripts/memory-decay-check.py --dry-run
-
-# 测试使用追踪
-python3 ~/.openclaw/workspace/scripts/memory-usage-tracker.py --help
-```
-
----
-
-## 📁 文件结构
-
-```
-openclaw-memory-system/
-├── README.md                              # 本文件
-├── memory-bionics-system.md               # 完整系统规范文档
-├── scripts/
-│   ├── memory-scoring.py                  # 评分/重评脚本
-│   ├── memory-decay-check.py              # 遗忘检查脚本
-│   ├── memory-usage-tracker.py            # 使用追踪脚本
-│   └── daily-memory-maintenance-instructions.md  # 维护指引
-└── examples/
-    └── decay-report-example.json          # 遗忘清单示例
-```
-
-### 部署后的文件位置
-
-```
-~/.openclaw/workspace/
-├── MEMORY.md                              # 主记忆文件（长期记忆）
-├── memory/
-│   ├── YYYY-MM-DD.md                      # 每日记忆日志（短期记忆）
-│   ├── usage-log.json                     # 使用追踪日志
-│   └── decay-report.json                  # 遗忘检查报告
-└── scripts/
-    ├── memory-scoring.py                  # 评分脚本
-    ├── memory-decay-check.py              # 遗忘检查脚本
-    └── memory-usage-tracker.py            # 使用追踪脚本
-```
-
----
-
-## 🔧 脚本说明
-
-### memory-scoring.py
-
-**功能**: 为记忆条目评分和每日重评
-
-**用法**:
-```bash
-python3 memory-scoring.py
-```
-
-**输出**:
-- memory/ 文件：首次评分（关键词匹配，不衰减）
-- MEMORY.md：每日重评（基础分 + 加分 - 衰减）
-
-**评分规则**:
-- 账号/密码/服务器/API Key → 15 分
-- 邮箱/邮件 → 12 分
-- 配置/设置/部署 → 9 分
-- 安全/规则/策略 → 9 分
-- 决策/决定/选择 → 8 分
-- 技能/工具 → 7 分
-- 日志/工作/任务 → 5 分
-
----
-
-### memory-decay-check.py
-
-**功能**: 检查遗忘条目（MEMORY.md 条目 + memory/过期文件）
-
-**用法**:
-```bash
-# 正常模式（生成报告）
-python3 memory-decay-check.py
-
-# 干跑模式（仅检查，不生成报告）
-python3 memory-decay-check.py --dry-run
-
-# 详细输出
-python3 memory-decay-check.py -v
-```
-
-**遗忘标准**:
-- MEMORY.md 条目：importance < 2
-- memory/ 文件：days_old > 30
-
-**输出**: `memory/decay-report.json`
-
----
-
-### memory-usage-tracker.py
-
-**功能**: 记录记忆条目使用（搜索命中、引用），计算加分
-
-**用法**:
-```bash
-# 记录搜索命中
-python3 memory-usage-tracker.py '条目标题' search
-
-# 记录引用
-python3 memory-usage-tracker.py '条目标题' citation
-
-# 分析模式（每日汇总）
-python3 memory-usage-tracker.py --analyze
-
-# 查看帮助
-python3 memory-usage-tracker.py --help
-```
-
-**加分规则**:
-- 被搜索命中：+0.1/次
-- 被引用使用：+0.2/次
-- 加分上限：+10 分
-
----
-
-## 📊 每日执行流程
-
-```
-每天凌晨 02:00 自动执行：
-       ↓
-┌──────────────────────────────────────┐
-│ 任务 1：分析使用日志                  │
-│ memory-usage-tracker.py --analyze    │
-├──────────────────────────────────────┤
-│ • 汇总昨天的搜索命中和引用记录       │
-│ • 更新 usage-log.json 中的加分数据   │
-│ • 输出：加分变动摘要                 │
-└──────────────────────────────────────┘
-       ↓
-┌──────────────────────────────────────┐
-│ 任务 2：评分/重评                     │
-│ memory-scoring.py                    │
-├──────────────────────────────────────┤
-│ • memory/ 文件：首次评分             │
-│ • MEMORY.md：每日重评                │
-│   （基础分 + 加分 - 衰减）           │
-└──────────────────────────────────────┘
-       ↓
-┌──────────────────────────────────────┐
-│ 任务 3：遗忘检查                      │
-│ memory-decay-check.py                │
-├──────────────────────────────────────┤
-│ • MEMORY.md 条目：检查 importance<2 │
-│ • memory/ 文件：检查 days_old>30    │
-│ • 生成遗忘清单                       │
-└──────────────────────────────────────┘
-       ↓
-┌──────────────────────────────────────┐
-│ 任务 4：汇报遗忘清单                  │
-│ 通过飞书/邮件发送给主人              │
-├──────────────────────────────────────┤
-│ 遗忘清单 = MEMORY.md 条目 + 文件    │
-│ 等待主人确认                         │
-└──────────────────────────────────────┘
-       ↓
-┌──────────────────────────────────────┐
-│ 任务 5：执行清理（主人确认后）        │
-├──────────────────────────────────────┤
-│ • 从 MEMORY.md 删除遗忘条目          │
-│ • 使用 trash 删除 memory/ 文件        │
-│ • 清理 usage-log.json 中的无效条目   │
-└──────────────────────────────────────┘
-```
-
----
-
-## 🔍 运维指南
-
-### 日常检查
-
-```bash
-# 查看最新遗忘报告
-cat ~/.openclaw/workspace/memory/decay-report.json
-
-# 查看使用日志
-cat ~/.openclaw/workspace/memory/usage-log.json
-
-# 查看检查日志
-tail -50 ~/.openclaw/workspace/memory/forget-check.log
-```
-
-### 手动执行记忆维护
-
-```bash
-# 评分/重评
-python3 ~/.openclaw/workspace/scripts/memory-scoring.py
-
-# 遗忘检查（干跑模式）
-python3 ~/.openclaw/workspace/scripts/memory-decay-check.py --dry-run
-
-# 分析使用日志
 python3 ~/.openclaw/workspace/scripts/memory-usage-tracker.py --analyze
 ```
 
-### 常见问题
+---
 
-#### Q1: 为什么某条目没有被清理？
+## 目录约定（重要）
 
-**检查**:
-- 评分是否 ≥2
-- 是否是核心记忆（≥11 分）
-- 是否加分抵消了衰减
+### `memory/` 目录只放标准 daily memory
+推荐放：
+- `YYYY-MM-DD.md`
+- 规范日期前缀的每日记忆日志
 
-#### Q2: 如何恢复被清理的记忆？
+不推荐放：
+- 配置学习笔记
+- 专题说明文档
+- 部署备忘录
+- 任意杂项 Markdown
 
-**方法**:
-- 检查废纸篓（`trash` 命令的文件可恢复）
-- 从 Git 历史恢复 MEMORY.md
+### 其他笔记放哪里？
+建议放到：
+- macOS `~/Documents/`
+- 项目自己的 docs 目录
 
-#### Q3: usage-log.json 文件过大怎么办？
-
-**解决**:
-- 清理已遗忘条目的记录
-- 脚本会自动清理，也可以手动执行：
-  ```bash
-  python3 memory-usage-tracker.py --cleanup
-  ```
-
-#### Q4: 如何调整衰减参数？
-
-**修改**:
-- `memory-scoring.py` 中的 `decay_rate`
-- `memory-decay-check.py` 中的 `FORGOTTEN_THRESHOLD` 和 `FILE_EXPIRY_DAYS`
-- 修改后测试验证
+这样可以避免污染记忆维护流程。
 
 ---
 
-## 📝 配置示例
+## 与 OpenViking / 多模态方案的关系
 
-### 环境变量（可选）
+本仓库当前主线仍然是：
+- **Markdown 记忆治理**
+- **daily memory → MEMORY.md 的分层沉淀**
 
-```bash
-# 自定义时区（默认 Asia/Shanghai）
-export MEMORY_SYSTEM_TZ="Asia/Shanghai"
+如果后续接入 OpenViking / 百炼 VLM / 本地 embedding，建议采用：
+- Markdown 仍作为真相源
+- 外部系统只做索引与检索增强
+- 不直接回写主记忆 Markdown
 
-# 自定义遗忘阈值（默认 2）
-export FORGOTTEN_THRESHOLD=2
-
-# 自定义文件过期天数（默认 30）
-export FILE_EXPIRY_DAYS=30
-```
-
-### Cron Job 配置示例
-
-```json
-{
-  "id": "daily-memory-maintenance",
-  "name": "每日记忆维护",
-  "enabled": true,
-  "schedule": {
-    "kind": "cron",
-    "expr": "0 2 * * *",
-    "tz": "Asia/Shanghai"
-  },
-  "payload": {
-    "kind": "agentTurn",
-    "message": "执行每日记忆维护任务。详细指引：~/.openclaw/workspace/scripts/daily-memory-maintenance-instructions.md"
-  },
-  "delivery": {
-    "mode": "announce",
-    "channel": "feishu",
-    "to": "user:YOUR_USER_ID"
-  }
-}
-```
+换句话说：
+> 先把记忆治理做好，再把检索与多模态能力外挂上去。
 
 ---
 
-## 🧪 测试
+## 当前已验证的方向
 
-### 单元测试
+在实际使用中，以下方向已证明合理：
 
-```bash
-# 运行测试套件
-python3 -m pytest tests/ -v
-```
-
-### 集成测试
-
-```bash
-# 创建测试记忆文件
-echo '### 测试条目 1
-这是一个测试条目。
-<!-- importance: 5 -->' > /tmp/test-memory.md
-
-# 测试评分脚本
-python3 scripts/memory-scoring.py
-
-# 测试遗忘检查
-python3 scripts/memory-decay-check.py --dry-run
-```
+- 将 `memory/` 收紧为标准 daily memory 目录
+- 让评分脚本只做“首次评分”
+- 让高分条目通过维护流程进入 `MEMORY.md`
+- 让文档类条目与系统实现类条目在评分上被区分对待
+- 先验证稳定性，再推进 OpenViking / VLM / embedding 增强
 
 ---
 
-## 📄 许可证
+## 不包含的内容
 
-MIT License
+本仓库 README 与脚本刻意不包含：
+- 个人 API Key
+- 用户 ID
+- 私有聊天目标
+- 个人设备路径细节之外的隐私内容
+- 私有主记忆内容
 
----
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-### 贡献指南
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+如果你要在自己的环境里使用，请自行填入：
+- cron 目标投递渠道
+- 你的 OpenClaw 路径
+- 私有集成配置
 
 ---
 
-## 📧 联系方式
+## 未来方向
 
-- **项目主页**: https://github.com/Suidge/openclaw-memory-system
-- **问题反馈**: https://github.com/Suidge/openclaw-memory-system/issues
-- **OpenClaw 文档**: https://docs.openclaw.ai
+### v2.x
+- 继续观察评分与吸收逻辑稳定性
+- 优化关键词规则
+- 继续验证 daily memory 清理策略
 
----
-
-## 📚 相关文档
-
-- [记忆仿生系统规范](memory-bionics-system.md) - 完整的系统机制说明
-- [每日维护指引](scripts/daily-memory-maintenance-instructions.md) - 运维人员参考
-- [OpenClaw 官方文档](https://docs.openclaw.ai) - OpenClaw 平台文档
+### v3.x
+- OpenViking 旁路验证
+- 多模态资源检索增强
+- 本地 embedding + 云端 VLM 的轻量组合
 
 ---
 
-*本文档会随系统迭代持续更新，请以最新版本为准。*
+## License
+
+MIT
+
+---
+
+如果你也在做 AI 助手的长期记忆，不妨从“如何遗忘”开始，而不是从“如何塞更多记忆”开始。🧠
