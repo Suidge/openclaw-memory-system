@@ -152,6 +152,52 @@ v2.2 重点是把 Markdown 记忆链路跑稳。更强的检索 / 多模态 / Op
 
 ## 架构概览
 
+### 系统架构图
+
+```mermaid
+flowchart TD
+    A[memory/YYYY-MM-DD.md
+Daily Memory 原始池] --> B[memory-scoring.py
+首次评分]
+    B --> C{得分 > 7 ?}
+    C -- 是 --> D[MEMORY.md
+主记忆沉淀层]
+    C -- 否 --> E[保留在 daily memory
+作为短期原始记忆]
+    D --> F[memory-decay-check.py
+遗忘检查]
+    E --> F
+    F --> G[decay-report.json
+待确认清理清单]
+    H[usage-log.json
+搜索命中 / 引用强化] --> D
+```
+
+### 仿生学比照图
+
+```mermaid
+flowchart LR
+    subgraph Human[人类记忆系统]
+        H1[海马体
+暂存新经历] --> H2[记忆巩固
+睡眠 / 重复回忆]
+        H2 --> H3[大脑皮层
+长期认知沉淀]
+        H3 --> H4[遗忘与强化
+长期动态调整]
+    end
+
+    subgraph OpenClaw[OpenClaw 仿生记忆系统]
+        O1[memory/YYYY-MM-DD.md
+Daily Memory 原始池] --> O2[每日维护流程
+评分 / 筛选 / 吸收]
+        O2 --> O3[MEMORY.md
+主记忆层]
+        O3 --> O4[usage-log + decay-check
+强化 / 遗忘治理]
+    end
+```
+
 ```text
 memory/YYYY-MM-DD.md
     ↓
