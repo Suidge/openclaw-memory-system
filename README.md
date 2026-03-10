@@ -35,56 +35,24 @@
 
 <div align="center">
 
-```svg
-<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="800" height="300" fill="#f8f9fa"/>
-  
-  <!-- Human Brain Side -->
-  <g transform="translate(50, 50)">
-    <text x="150" y="-20" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">🧠 人类大脑</text>
+```mermaid
+graph TB
+    subgraph Human["🧠 人类大脑"]
+        H1[海马体<br/>短期记忆]
+        H2[大脑皮层<br/>长期记忆]
+        H1 -->|巩固 | H2
+    end
     
-    <!-- Hippocampus -->
-    <rect x="50" y="20" width="200" height="60" rx="8" fill="#74b9ff" stroke="#0984e3" stroke-width="2"/>
-    <text x="150" y="45" text-anchor="middle" font-size="14" fill="white" font-weight="bold">海马体</text>
-    <text x="150" y="65" text-anchor="middle" font-size="10" fill="white">短期记忆</text>
+    subgraph OpenClaw["🤖 OpenClaw"]
+        O1[memory/*.md<br/>原始经历/日志]
+        O2[MEMORY.md<br/>提炼认知/规则]
+        O1 -->|consolidation| O2
+    end
     
-    <!-- Cortex -->
-    <rect x="50" y="100" width="200" height="60" rx="8" fill="#a29bfe" stroke="#6c5ce7" stroke-width="2"/>
-    <text x="150" y="125" text-anchor="middle" font-size="14" fill="white" font-weight="bold">大脑皮层</text>
-    <text x="150" y="145" text-anchor="middle" font-size="10" fill="white">长期记忆</text>
-    
-    <!-- Arrow -->
-    <path d="M 150 80 L 150 100" stroke="#636e72" stroke-width="2" marker-end="url(#arrowhead)"/>
-    <text x="160" y="95" font-size="10" fill="#636e72">巩固</text>
-  </g>
-  
-  <!-- OpenClaw Side -->
-  <g transform="translate(450, 50)">
-    <text x="150" y="-20" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">🤖 OpenClaw</text>
-    
-    <!-- Daily Memory -->
-    <rect x="50" y="20" width="200" height="60" rx="8" fill="#74b9ff" stroke="#0984e3" stroke-width="2"/>
-    <text x="150" y="45" text-anchor="middle" font-size="14" fill="white" font-weight="bold">memory/*.md</text>
-    <text x="150" y="65" text-anchor="middle" font-size="10" fill="white">原始经历/日志</text>
-    
-    <!-- Main Memory -->
-    <rect x="50" y="100" width="200" height="60" rx="8" fill="#a29bfe" stroke="#6c5ce7" stroke-width="2"/>
-    <text x="150" y="125" text-anchor="middle" font-size="14" fill="white" font-weight="bold">MEMORY.md</text>
-    <text x="150" y="145" text-anchor="middle" font-size="10" fill="white">提炼认知/规则</text>
-    
-    <!-- Arrow -->
-    <path d="M 150 80 L 150 100" stroke="#636e72" stroke-width="2" marker-end="url(#arrowhead)"/>
-    <text x="160" y="95" font-size="10" fill="#636e72">consolidation</text>
-  </g>
-  
-  <!-- Arrow definition -->
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#636e72"/>
-    </marker>
-  </defs>
-</svg>
+    style H1 fill:#74b9ff,stroke:#0984e3,color:white
+    style H2 fill:#a29bfe,stroke:#6c5ce7,color:white
+    style O1 fill:#74b9ff,stroke:#0984e3,color:white
+    style O2 fill:#a29bfe,stroke:#6c5ce7,color:white
 ```
 
 </div>
@@ -105,85 +73,31 @@
 
 <div align="center">
 
-```svg
-<svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="900" height="280" fill="#f8f9fa"/>
-  
-  <!-- Human Consolidation -->
-  <g transform="translate(30, 30)">
-    <rect x="0" y="0" width="400" height="110" rx="10" fill="#dfe6e9" stroke="#636e72" stroke-width="1"/>
-    <text x="200" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d3436">🧠 人类记忆巩固 (睡眠中)</text>
+```mermaid
+graph LR
+    subgraph Human["🧠 人类记忆巩固 (睡眠中)"]
+        A1[白天经历] --> A2[海马体回放]
+        A2 --> A3[提取核心模式]
+        A3 --> A4[皮层存储]
+        A4 -.->|遗忘细节 | A5[ ]
+    end
     
-    <g transform="translate(20, 40)">
-      <rect x="0" y="0" width="70" height="40" rx="5" fill="#0984e3"/>
-      <text x="35" y="25" text-anchor="middle" font-size="10" fill="white">白天经历</text>
-      
-      <path d="M 70 20 L 90 20" stroke="#636e72" stroke-width="2" marker-end="url(#arrow)"/>
-      
-      <rect x="90" y="0" width="70" height="40" rx="5" fill="#0984e3"/>
-      <text x="125" y="20" text-anchor="middle" font-size="9" fill="white">海马体</text>
-      <text x="125" y="32" text-anchor="middle" font-size="9" fill="white">回放</text>
-      
-      <path d="M 160 20 L 180 20" stroke="#636e72" stroke-width="2" marker-end="url(#arrow)"/>
-      
-      <rect x="180" y="0" width="70" height="40" rx="5" fill="#6c5ce7"/>
-      <text x="215" y="20" text-anchor="middle" font-size="9" fill="white">提取</text>
-      <text x="215" y="32" text-anchor="middle" font-size="9" fill="white">核心模式</text>
-      
-      <path d="M 250 20 L 270 20" stroke="#636e72" stroke-width="2" marker-end="url(#arrow)"/>
-      
-      <rect x="270" y="0" width="70" height="40" rx="5" fill="#a29bfe"/>
-      <text x="305" y="20" text-anchor="middle" font-size="9" fill="white">皮层</text>
-      <text x="305" y="32" text-anchor="middle" font-size="9" fill="white">存储</text>
-      
-      <path d="M 340 20 L 360 20" stroke="#636e72" stroke-width="2" stroke-dasharray="4"/>
-      <text x="350" y="15" font-size="8" fill="#b2bec3">遗忘</text>
-    </g>
-  </g>
-  
-  <!-- OpenClaw Consolidation -->
-  <g transform="translate(30, 150)">
-    <rect x="0" y="0" width="400" height="110" rx="10" fill="#dfe6e9" stroke="#636e72" stroke-width="1"/>
-    <text x="200" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d3436">🤖 OpenClaw (daily-meditation)</text>
+    subgraph OpenClaw["🤖 OpenClaw (daily-meditation)"]
+        B1[daily memory] --> B2[scoring 评分]
+        B2 --> B3[classify 分类]
+        B3 --> B4[distill 提炼]
+        B4 --> B5[MEMORY.md]
+    end
     
-    <g transform="translate(20, 40)">
-      <rect x="0" y="0" width="70" height="40" rx="5" fill="#0984e3"/>
-      <text x="35" y="20" text-anchor="middle" font-size="9" fill="white">daily</text>
-      <text x="35" y="32" text-anchor="middle" font-size="9" fill="white">memory</text>
-      
-      <path d="M 70 20 L 90 20" stroke="#636e72" stroke-width="2" marker-end="url(#arrow)"/>
-      
-      <rect x="90" y="0" width="70" height="40" rx="5" fill="#0984e3"/>
-      <text x="125" y="20" text-anchor="middle" font-size="9" fill="white">scoring</text>
-      <text x="125" y="32" text-anchor="middle" font-size="9" fill="white">评分</text>
-      
-      <path d="M 160 20 L 180 20" stroke="#636e72" stroke-width="2" marker-end="url(#arrow)"/>
-      
-      <rect x="180" y="0" width="70" height="40" rx="5" fill="#6c5ce7"/>
-      <text x="215" y="20" text-anchor="middle" font-size="9" fill="white">classify</text>
-      <text x="215" y="32" text-anchor="middle" font-size="9" fill="white">分类</text>
-      
-      <path d="M 250 20 L 270 20" stroke="#636e72" stroke-width="2" marker-end="url(#arrow)"/>
-      
-      <rect x="270" y="0" width="70" height="40" rx="5" fill="#a29bfe"/>
-      <text x="305" y="20" text-anchor="middle" font-size="9" fill="white">distill</text>
-      <text x="305" y="32" text-anchor="middle" font-size="9" fill="white">提炼</text>
-      
-      <path d="M 340 20 L 360 20" stroke="#636e72" stroke-width="2" marker-end="url(#arrow)"/>
-      
-      <rect x="360" y="0" width="30" height="40" rx="5" fill="#fdcb6e"/>
-      <text x="375" y="25" text-anchor="middle" font-size="10" fill="white">MEMORY</text>
-    </g>
-  </g>
-  
-  <!-- Arrow definition -->
-  <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#636e72"/>
-    </marker>
-  </defs>
-</svg>
+    style A1 fill:#0984e3,color:white
+    style A2 fill:#0984e3,color:white
+    style A3 fill:#6c5ce7,color:white
+    style A4 fill:#a29bfe,color:white
+    style B1 fill:#0984e3,color:white
+    style B2 fill:#0984e3,color:white
+    style B3 fill:#6c5ce7,color:white
+    style B4 fill:#a29bfe,color:white
+    style B5 fill:#fdcb6e,color:black
 ```
 
 </div>
@@ -198,47 +112,15 @@
 
 <div align="center">
 
-```svg
-<svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="800" height="200" fill="#f8f9fa"/>
-  
-  <!-- Title -->
-  <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#2d3436">🕰️ 记忆衰减曲线</text>
-  
-  <!-- Axes -->
-  <line x1="50" y1="170" x2="750" y2="170" stroke="#636e72" stroke-width="2"/>
-  <line x1="50" y1="170" x2="50" y2="30" stroke="#636e72" stroke-width="2"/>
-  
-  <!-- X-axis label -->
-  <text x="400" y="195" text-anchor="middle" font-size="12" fill="#636e72">时间 (天)</text>
-  <text x="750" y="185" font-size="10" fill="#636e72">→</text>
-  
-  <!-- Y-axis label -->
-  <text x="20" y="100" text-anchor="middle" font-size="12" fill="#636e72" transform="rotate(-90, 20, 100)">重要性评分</text>
-  <text x="45" y="35" font-size="10" fill="#636e72">↑</text>
-  
-  <!-- Decay curves -->
-  <!-- High importance (7-10) -->
-  <path d="M 50 60 Q 200 70, 400 85 T 750 110" fill="none" stroke="#6c5ce7" stroke-width="3"/>
-  <text x="600" y="95" font-size="11" fill="#6c5ce7" font-weight="bold">7-10 分 (温和衰减 -0.01/天)</text>
-  
-  <!-- Medium importance (4-6) -->
-  <path d="M 50 60 Q 200 80, 400 105 T 750 140" fill="none" stroke="#0984e3" stroke-width="3" stroke-dasharray="5,3"/>
-  <text x="600" y="125" font-size="11" fill="#0984e3" font-weight="bold">4-6 分 (正常衰减 -0.02/天)</text>
-  
-  <!-- Low importance (1-3) -->
-  <path d="M 50 60 Q 150 100, 300 140 T 500 165" fill="none" stroke="#d63031" stroke-width="3" stroke-dasharray="2,2"/>
-  <text x="380" y="160" font-size="11" fill="#d63031" font-weight="bold">1-3 分 (快速衰减 -0.03/天)</text>
-  
-  <!-- Threshold line -->
-  <line x1="50" y1="150" x2="750" y2="150" stroke="#fdcb6e" stroke-width="2" stroke-dasharray="5,5"/>
-  <text x="760" y="155" font-size="10" fill="#fdcb6e">遗忘阈值 (2.0)</text>
-  
-  <!-- Core memory line -->
-  <line x1="50" y1="50" x2="750" y2="50" stroke="#00b894" stroke-width="2"/>
-  <text x="600" y="45" font-size="11" fill="#00b894" font-weight="bold">≥11 分 核心记忆 (永不衰减)</text>
-</svg>
+```mermaid
+xychart-beta
+    title "🕰️ 记忆衰减曲线"
+    x-axis "时间 (天)" [0, 10, 20, 30, 40, 50, 60]
+    y-axis "重要性评分" 0 --> 12
+    line "7-10 分 (温和衰减 -0.01/天)" [10, 9.9, 9.8, 9.7, 9.6, 9.5, 9.4]
+    line "4-6 分 (正常衰减 -0.02/天)" [10, 9.8, 9.6, 9.4, 9.2, 9.0, 8.8]
+    line "1-3 分 (快速衰减 -0.03/天)" [10, 9.7, 9.4, 9.1, 8.8, 8.5, 8.2]
+    line "≥11 分 核心记忆 (永不衰减)" [11, 11, 11, 11, 11, 11, 11]
 ```
 
 </div>
@@ -278,76 +160,44 @@
 
 <div align="center">
 
-```svg
-<svg viewBox="0 0 900 450" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="900" height="450" fill="#f8f9fa"/>
-  
-  <!-- Daily Memory Layer -->
-  <g transform="translate(50, 30)">
-    <rect x="0" y="0" width="800" height="80" rx="10" fill="#74b9ff" stroke="#0984e3" stroke-width="2"/>
-    <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="white">📝 Daily Memory Layer</text>
-    <text x="400" y="45" text-anchor="middle" font-size="12" fill="white">memory/YYYY-MM-DD.md</text>
-    <text x="400" y="62" text-anchor="middle" font-size="11" fill="white">原始经历 | 执行日志 | 反思草稿 | 临时笔记</text>
-  </g>
-  
-  <!-- Arrow down -->
-  <path d="M 450 110 L 450 130" stroke="#636e72" stroke-width="3" marker-end="url(#arrowhead)"/>
-  
-  <!-- Scoring Module -->
-  <g transform="translate(300, 130)">
-    <rect x="0" y="0" width="300" height="60" rx="8" fill="#0984e3" stroke="#06528f" stroke-width="2"/>
-    <text x="150" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">memory-scoring.py</text>
-    <text x="150" y="45" text-anchor="middle" font-size="11" fill="white">重要性评分 | 候选标记</text>
-  </g>
-  
-  <!-- Arrow down -->
-  <path d="M 450 190 L 450 210" stroke="#636e72" stroke-width="3" marker-end="url(#arrowhead)"/>
-  
-  <!-- Candidate Filter -->
-  <g transform="translate(325, 210)">
-    <rect x="0" y="0" width="250" height="50" rx="25" fill="#fdcb6e" stroke="#e17055" stroke-width="2"/>
-    <text x="125" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d3436">候选 (importance ≥ 7)</text>
-  </g>
-  
-  <!-- Arrow down -->
-  <path d="M 450 260 L 450 280" stroke="#636e72" stroke-width="3" marker-end="url(#arrowhead)"/>
-  
-  <!-- Consolidation Module -->
-  <g transform="translate(300, 280)">
-    <rect x="0" y="0" width="300" height="60" rx="8" fill="#6c5ce7" stroke="#4834d4" stroke-width="2"/>
-    <text x="150" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">memory-consolidation.py</text>
-    <text x="150" y="45" text-anchor="middle" font-size="11" fill="white">类型判断 | 价值评估 | 提炼固化</text>
-  </g>
-  
-  <!-- Arrow down -->
-  <path d="M 450 340 L 450 360" stroke="#636e72" stroke-width="3" marker-end="url(#arrowhead)"/>
-  
-  <!-- Main Memory Layer -->
-  <g transform="translate(50, 360)">
-    <rect x="0" y="0" width="800" height="80" rx="10" fill="#a29bfe" stroke="#6c5ce7" stroke-width="2"/>
-    <text x="400" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="white">🧠 Main Memory Layer</text>
-    <text x="400" y="45" text-anchor="middle" font-size="12" fill="white">MEMORY.md</text>
-    <text x="400" y="62" text-anchor="middle" font-size="11" fill="white">长期事实 | 重要决策 | 可复用规则 | 提炼认知</text>
-  </g>
-  
-  <!-- Arrow to decay -->
-  <path d="M 850 400 L 880 400 L 880 50 L 850 50" stroke="#636e72" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
-  
-  <!-- Decay Check Module -->
-  <g transform="translate(550, 20)">
-    <rect x="0" y="0" width="280" height="60" rx="8" fill="#d63031" stroke="#c0392b" stroke-width="2"/>
-    <text x="140" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="white">memory-decay-check.py</text>
-    <text x="140" y="45" text-anchor="middle" font-size="11" fill="white">遗忘审计 | 清理建议</text>
-  </g>
-  
-  <!-- Arrow definition -->
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#636e72"/>
-    </marker>
-  </defs>
-</svg>
+```mermaid
+flowchart TD
+    subgraph Daily["📝 Daily Memory Layer"]
+        D1[memory/YYYY-MM-DD.md<br/>原始经历 | 执行日志 | 反思草稿 | 临时笔记]
+    end
+    
+    subgraph Scoring["memory-scoring.py"]
+        S1[重要性评分 | 候选标记]
+    end
+    
+    subgraph Candidate["候选过滤"]
+        C1[importance ≥ 7]
+    end
+    
+    subgraph Consolidation["memory-consolidation.py"]
+        CS1[类型判断 | 价值评估 | 提炼固化]
+    end
+    
+    subgraph Main["🧠 Main Memory Layer"]
+        M1[MEMORY.md<br/>长期事实 | 重要决策 | 可复用规则 | 提炼认知]
+    end
+    
+    subgraph Decay["memory-decay-check.py"]
+        DC1[遗忘审计 | 清理建议]
+    end
+    
+    Daily --> Scoring
+    Scoring --> Candidate
+    Candidate --> Consolidation
+    Consolidation --> Main
+    Main -.->|定期审计 | Decay
+    
+    style Daily fill:#74b9ff,stroke:#0984e3,color:white
+    style Scoring fill:#0984e3,stroke:#06528f,color:white
+    style Candidate fill:#fdcb6e,stroke:#e17055,color:black
+    style Consolidation fill:#6c5ce7,stroke:#4834d4,color:white
+    style Main fill:#a29bfe,stroke:#6c5ce7,color:white
+    style Decay fill:#d63031,stroke:#c0392b,color:white
 ```
 
 </div>
