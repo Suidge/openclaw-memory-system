@@ -1,0 +1,79 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#EEF2FF"/>
+    </linearGradient>
+    <linearGradient id="title" x1="220" y1="88" x2="900" y2="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D4ED8"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1200" height="700" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#94A3B8" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="700" rx="28" fill="url(#bg)"/>
+
+  <text x="82" y="88" fill="url(#title)" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Memory pipeline overview</text>
+  <text x="82" y="122" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="18">A compact long-term cognition flow: capture → score → consolidate → govern</text>
+
+  <g filter="url(#shadow)">
+    <rect x="76" y="176" width="230" height="118" rx="24" fill="#FFFFFF"/>
+    <rect x="76" y="176" width="230" height="118" rx="24" stroke="#BFDBFE" stroke-width="2"/>
+    <text x="104" y="218" fill="#1E3A8A" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">1. Daily memory</text>
+    <text x="104" y="251" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">Raw events, notes,</text>
+    <text x="104" y="275" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">reflections, and traces</text>
+    <text x="104" y="295" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="14">memory/YYYY-MM-DD.md</text>
+
+    <rect x="356" y="176" width="230" height="118" rx="24" fill="#FFFFFF"/>
+    <rect x="356" y="176" width="230" height="118" rx="24" stroke="#C4B5FD" stroke-width="2"/>
+    <text x="384" y="218" fill="#5B21B6" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">2. Scoring</text>
+    <text x="384" y="251" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">Lightweight signal-based</text>
+    <text x="384" y="275" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">candidate detection</text>
+    <text x="384" y="295" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="14">memory-scoring.py</text>
+
+    <rect x="636" y="176" width="230" height="118" rx="24" fill="#FFFFFF"/>
+    <rect x="636" y="176" width="230" height="118" rx="24" stroke="#A7F3D0" stroke-width="2"/>
+    <text x="664" y="218" fill="#065F46" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">3. Consolidation</text>
+    <text x="664" y="251" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">Type judgment, long-term</text>
+    <text x="664" y="275" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">value check, distillation</text>
+    <text x="664" y="295" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="14">memory-consolidation.py</text>
+
+    <rect x="916" y="176" width="230" height="118" rx="24" fill="#FFFFFF"/>
+    <rect x="916" y="176" width="230" height="118" rx="24" stroke="#FBCFE8" stroke-width="2"/>
+    <text x="944" y="218" fill="#9D174D" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">4. Governance</text>
+    <text x="944" y="251" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">Pruning hints, low-reuse</text>
+    <text x="944" y="275" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="16">events, merge suggestions</text>
+    <text x="944" y="295" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="14">memory-decay-check.py</text>
+  </g>
+
+  <g stroke="#94A3B8" stroke-width="3" stroke-linecap="round">
+    <path d="M306 235H356"/>
+    <path d="M586 235H636"/>
+    <path d="M866 235H916"/>
+  </g>
+  <g fill="#94A3B8">
+    <path d="M348 227L356 235L348 243"/>
+    <path d="M628 227L636 235L628 243"/>
+    <path d="M908 227L916 235L908 243"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="144" y="404" width="408" height="198" rx="28" fill="#FFFFFF"/>
+    <rect x="144" y="404" width="408" height="198" rx="28" stroke="#CBD5E1" stroke-width="2"/>
+    <text x="178" y="452" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="800">Main memory principle</text>
+    <text x="178" y="493" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">• Score is only a candidate signal</text>
+    <text x="178" y="523" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">• Admission requires long-term value</text>
+    <text x="178" y="553" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">• MEMORY.md stores distilled cognition,</text>
+    <text x="178" y="579" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">  not a dump of high-scoring events</text>
+
+    <rect x="646" y="404" width="408" height="198" rx="28" fill="#FFFFFF"/>
+    <rect x="646" y="404" width="408" height="198" rx="28" stroke="#CBD5E1" stroke-width="2"/>
+    <text x="680" y="452" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="800">Meditation vs maintenance</text>
+    <text x="680" y="493" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">• daily-meditation produces insight</text>
+    <text x="680" y="523" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">• daily-memory-maintenance performs</text>
+    <text x="680" y="549" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">  formal scoring, consolidation, and governance</text>
+    <text x="680" y="579" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="17">• Only maintenance writes main memory</text>
+  </g>
+</svg>
