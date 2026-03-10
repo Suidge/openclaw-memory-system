@@ -34,27 +34,7 @@
 ### 1. 双层记忆结构 (Two-Layer Architecture)
 
 <div align="center">
-
-```mermaid
-graph TB
-    subgraph Human["🧠 人类大脑"]
-        H1["海马体\n短期记忆"]
-        H2["大脑皮层\n长期记忆"]
-        H1 -->|巩固 | H2
-    end
-    
-    subgraph OpenClaw["🤖 OpenClaw"]
-        O1["memory/*.md\n原始经历/日志"]
-        O2["MEMORY.md\n提炼认知/规则"]
-        O1 -->|consolidation| O2
-    end
-    
-    style H1 fill:#74b9ff,stroke:#0984e3,color:white
-    style H2 fill:#a29bfe,stroke:#6c5ce7,color:white
-    style O1 fill:#74b9ff,stroke:#0984e3,color:white
-    style O2 fill:#a29bfe,stroke:#6c5ce7,color:white
-```
-
+  <img src="./assets/readme/hero.svg" alt="OpenClaw Memory System visual banner" width="100%" />
 </div>
 
 | 人类大脑 | OpenClaw 记忆系统 | 功能 |
@@ -158,47 +138,7 @@ xychart-beta
 ## 🏗️ 系统架构 | Architecture
 
 <div align="center">
-
-```mermaid
-flowchart TD
-    subgraph Daily["📝 Daily Memory Layer"]
-        D1["memory/YYYY-MM-DD.md\n原始经历/执行日志/反思草稿/临时笔记"]
-    end
-    
-    subgraph Scoring["memory-scoring.py"]
-        S1["重要性评分\n候选标记"]
-    end
-    
-    subgraph Candidate["候选过滤"]
-        C1["importance ≥ 7"]
-    end
-    
-    subgraph Consolidation["memory-consolidation.py"]
-        CS1["类型判断/价值评估/提炼固化"]
-    end
-    
-    subgraph Main["🧠 Main Memory Layer"]
-        M1["MEMORY.md\n长期事实/重要决策/可复用规则/提炼认知"]
-    end
-    
-    subgraph Decay["memory-decay-check.py"]
-        DC1["遗忘审计/清理建议"]
-    end
-    
-    Daily --> Scoring
-    Scoring --> Candidate
-    Candidate --> Consolidation
-    Consolidation --> Main
-    Main -.->|定期审计 | Decay
-    
-    style Daily fill:#74b9ff,stroke:#0984e3,color:white
-    style Scoring fill:#0984e3,stroke:#06528f,color:white
-    style Candidate fill:#fdcb6e,stroke:#e17055,color:black
-    style Consolidation fill:#6c5ce7,stroke:#4834d4,color:white
-    style Main fill:#a29bfe,stroke:#6c5ce7,color:white
-    style Decay fill:#d63031,stroke:#c0392b,color:white
-```
-
+  <img src="./assets/readme/architecture.svg" alt="OpenClaw Memory System architecture" width="100%" />
 </div>
 
 ---
