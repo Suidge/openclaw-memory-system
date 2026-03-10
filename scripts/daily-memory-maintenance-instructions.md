@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 # 每日记忆维护任务指引 (v2.2)
+=======
+# Daily Memory Maintenance Instructions (v2.3)
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
 
-## 执行时间
-每天凌晨 02:00（Asia/Shanghai）
+## Schedule
+Every day at 02:00 (Asia/Shanghai)
 
-## 任务清单
+## Responsibilities
+The maintenance job is the **formal long-term memory maintenance entrypoint**.
 
+<<<<<<< HEAD
 ### 任务 0：分析使用日志（前置任务）
 1. 运行：`python3 ~/.openclaw/workspace/scripts/memory-usage-tracker.py --analyze`
 2. 汇总昨天的搜索命中和引用记录
@@ -97,12 +103,44 @@ memory/ 文件：
 任务 4：汇报清单（飞书私信）
   ↓
 任务 5：等待确认 → 执行清理
-```
+=======
+It should:
+1. analyze usage signals
+2. score new daily-memory entries
+3. consolidate long-term candidates into `MEMORY.md`
+4. run governance audit (forgetting + pruning suggestions)
+5. report findings
+6. wait for confirmation before cleanup
 
 ---
 
-## 注意事项
+## Steps
 
+### Step 0: analyze usage log
+Run:
+```bash
+python3 ~/.openclaw/workspace/scripts/memory-usage-tracker.py --analyze
+```
+
+### Step 1: score daily memory
+Run:
+```bash
+python3 ~/.openclaw/workspace/scripts/memory-scoring.py
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
+```
+
+Notes:
+- score only newly added daily-memory entries
+- candidate threshold stays at `importance >= 7`
+- scoring does not directly update `MEMORY.md`
+
+### Step 2: consolidate candidates into main memory
+Run:
+```bash
+python3 ~/.openclaw/workspace/scripts/memory-consolidation.py
+```
+
+<<<<<<< HEAD
 - ✅ 任务 0 必须最先执行（为后续维护提供使用数据参考）
 - ✅ `memory/*.md` 条目只首次评分，不衰减
 - ✅ 高价值条目由维护任务吸收入 `MEMORY.md`（当前规则：得分 > 7）
@@ -117,3 +155,42 @@ memory/ 文件：
 ---
 
 *最后更新：2026-03-08 v2.2*
+=======
+Notes:
+- read scored daily-memory entries from the recent window
+- include entries already scored previously if they still fall within the consolidation window
+- candidate does not mean automatic admission
+- admit only after type judgment + long-term value judgment + distillation
+
+### Step 3: run governance audit
+Run:
+```bash
+python3 ~/.openclaw/workspace/scripts/memory-decay-check.py
+```
+
+Audit targets:
+- forgotten main-memory items
+- expired daily-memory files
+- duplicate themes
+- low-reuse event candidates
+- merge suggestions
+
+### Step 4: report governance summary
+Report:
+- forgotten candidates
+- expired files
+- pruning suggestions
+- merge suggestions
+
+### Step 5: cleanup only after confirmation
+Do not delete or merge memory content automatically without confirmation.
+
+---
+
+## Important rules
+
+- `MEMORY.md` is maintained here, not in the meditation job
+- `memory/*.md` entries are scored first, then consolidated later
+- use `trash` instead of destructive deletion when possible
+- this file is an execution guide, not a design document
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)

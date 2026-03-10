@@ -1,308 +1,65 @@
 # OpenClaw Memory System
 
-一个为 OpenClaw 设计的**仿生记忆系统**：让 AI 助手不只是“存记忆”，而是像人一样对记忆做**评分、筛选、沉淀、遗忘与强化**。
+A biomimetic memory workflow for OpenClaw agents.
 
-> **真正的智能，不在于记住一切，而在于知道什么值得留下。**
+## What this project is
 
-这个项目最初不是从“怎么做更大的上下文”出发，而是从一个更像生命的问题出发：
+This repository contains a practical memory architecture for OpenClaw that separates:
 
-> 如果 AI 要长期陪伴人，它的记忆不应该只是数据库，而应该更像一种**会演化的心智结构**。
+- **daily memory** (`memory/YYYY-MM-DD.md`) for raw experience, logs, and reflections
+- **main memory** (`MEMORY.md`) for distilled long-term facts, rules, and decisions
+- **governance scripts** for scoring, consolidation, forgetting, and pruning suggestions
 
-也因此，本项目始终保留一个核心立场：
+The core idea is simple:
 
-## **AI 记忆系统的长期方向之一，一定是拟人。**
-
-不是机械地复制人类全部缺点，而是吸收人类记忆中那些真正有价值的特征：
-- 会遗忘
-- 会强化
-- 会提炼
-- 会分层
-- 会把“经历”沉淀成“长期认知”
+> Long-term memory should not be a dump of high-scoring events.  
+> It should be a compact index of durable cognition.
 
 ---
 
-## 仿生学灵感：从海马体到长期心智
+## Version status
 
-这套系统最初的灵感，并不只是来自软件工程，而是来自人类记忆本身。
-
-在人脑中，**海马体（hippocampus）** 更像一个“近期经历的整理中枢”：
-- 它接住白天不断涌入的事件
-- 暂时保存新形成的记忆痕迹
-- 在睡眠与重复回忆中，把值得留下的内容送入更稳定的长期记忆网络
-
-而**大脑皮层（neocortex）** 更像长期沉淀的认知结构：
-- 它不只是保存事件本身
-- 更保存事件之间的模式、联系与长期意义
-- 它让“今天发生了什么”慢慢变成“我对世界的长期理解”
-
-这个项目正是试图把这种结构，转译成适合 AI 助手的记忆系统：
-
-| 人类记忆机制 | 对应系统设计 |
-|---|---|
-| 海马体暂存新经历 | `memory/YYYY-MM-DD.md` 作为 daily memory 原始池 |
-| 睡眠中的记忆巩固 | 每日维护流程对条目评分、筛选、吸收 |
-| 皮层长期沉淀 | `MEMORY.md` 作为主记忆与长期认知层 |
-| 反复回忆导致强化 | search / citation 命中带来的加分机制 |
-| 久不使用的记忆衰减 | 遗忘检查与清理候选机制 |
-
-换句话说，这个系统的目标从来不只是“多一个记忆数据库”，而是：
-
-> **让 AI 的记忆结构，从日志堆积，逐渐进化为一种更接近人类的长期心智结构。**
-
-这也是为什么本项目坚持分层、评分、提炼、遗忘，而不追求“把所有内容无差别永久保存”。
-因为在人类那里，真正构成人格与认知的，从来不是信息总量，而是：
-
-- 什么被保留
-- 什么被放下
-- 什么被反复调用
-- 什么最终沉淀为长期判断
-
-从 marketing 的角度说，这个项目卖的不是一个脚本集合，而是一种更有想象力的未来方向：
-
-## **从记忆检索，走向记忆进化。**
+**Current public design baseline**: v2.3  
+**Focus**:
+- score first, but treat score only as a **candidate signal**
+- consolidate into `MEMORY.md` only after **type judgment** and **long-term value judgment**
+- keep `MEMORY.md` compact through governance checks instead of endless accumulation
 
 ---
 
-## 为什么要做“仿生记忆”
-
-今天大多数 AI 记忆方案，本质上都更像：
-- 日志堆积
-- 向量检索
-- 原样召回
-- 无限追加
-
-这些方案有用，但它们缺少一种很关键的东西：
-
-## **记忆治理（memory governance）**
-
-人类不会平等地记住每一件事。
-
-一次闲聊、一个错误、一次争吵、一个重要决定、一个长期习惯、一个身份事实——它们进入大脑后的命运完全不同。
-有的瞬间消散，有的沉淀为长期记忆，有的会因为反复被提取而越来越稳固。
-
-这正是本项目的灵感来源：
-
-### 1. 遗忘曲线（Forgetting Curve）
-不是所有记忆都值得永久保留。低价值内容应该逐渐退出主记忆层。
-
-### 2. 记忆强化（Memory Reinforcement）
-被反复命中、反复引用、反复使用的内容，应该获得更高权重。
-
-### 3. 记忆巩固（Memory Consolidation）
-每天产生的大量日常碎片，不应该直接进入长期主记忆，而应该先经过筛选、提炼和沉淀。
-
-### 4. 人格化方向（Human-like Evolution）
-AI 的长期记忆系统，不应该只是“检索更准”，还应该更像人类形成经验、习惯、偏好和长期认知的过程。
-
----
-
-## 项目目标
-
-本项目解决的不是“如何把更多内容塞进上下文”，而是：
-
-1. **如何对新记忆做首次评分**
-2. **如何从日常记忆中筛出真正高价值内容**
-3. **如何把高价值内容沉淀到主记忆**
-4. **如何对低价值内容逐步遗忘并清理**
-5. **如何通过搜索命中 / 引用使用形成强化机制**
-6. **如何让 AI 的记忆从“存储系统”进化成“拟人的长期心智结构”**
-
----
-
-## 当前状态
-
-- **稳定版本思路**：v2.2
-- **仓库用途**：沉淀可复用的记忆系统脚本、规则与设计文档
-- **适用场景**：
-  - OpenClaw 工作区中的 Markdown 记忆文件
-  - 每日记忆日志（daily memory）
-  - 主记忆文件（`MEMORY.md`）
-  - 需要“会遗忘、会强化、会提炼”的 AI 助手
-
----
-
-## 设计原则
-
-### 1. Markdown 是真相源
-系统不依赖专有数据库作为主存储。
-
-- `memory/YYYY-MM-DD.md`：日常记忆原始池
-- `MEMORY.md`：主记忆沉淀层
-
-### 2. 日常记忆与主记忆分层
-- **daily memory**：原始、细碎、当日发生的事项
-- **main memory**：经筛选后的长期记忆
-
-### 3. 记忆不是永久累积，而是动态治理
-- 新记忆会被评分
-- 常用记忆会被强化
-- 低价值记忆会被遗忘
-- 真正重要的核心记忆长期保留
-
-### 4. 先稳定，再扩展
-v2.2 重点是把 Markdown 记忆链路跑稳。更强的检索 / 多模态 / OpenViking 集成属于后续增强，不是当前稳定版的前提。
-
-### 5. 技术服务于心智，而不是反过来
-这个项目不是单纯为了做“更复杂的脚本系统”。
-我们希望它最终服务的是一个更大的目标：
-
-> 让 AI 和记忆之间的关系，更接近“经历—筛选—沉淀—人格化认知”的过程。
-
----
-
-## 架构概览
-
-### 系统架构图
-
-```mermaid
-flowchart TD
-    A[memory/YYYY-MM-DD.md
-Daily Memory 原始池] --> B[memory-scoring.py
-首次评分]
-    B --> C{得分 > 7 ?}
-    C -- 是 --> D[MEMORY.md
-主记忆沉淀层]
-    C -- 否 --> E[保留在 daily memory
-作为短期原始记忆]
-    D --> F[memory-decay-check.py
-遗忘检查]
-    E --> F
-    F --> G[decay-report.json
-待确认清理清单]
-    H[usage-log.json
-搜索命中 / 引用强化] --> D
-```
-
-### 仿生学比照图
-
-```mermaid
-flowchart LR
-    subgraph Human[人类记忆系统]
-        H1[海马体
-暂存新经历] --> H2[记忆巩固
-睡眠 / 重复回忆]
-        H2 --> H3[大脑皮层
-长期认知沉淀]
-        H3 --> H4[遗忘与强化
-长期动态调整]
-    end
-
-    subgraph OpenClaw[OpenClaw 仿生记忆系统]
-        O1[memory/YYYY-MM-DD.md
-Daily Memory 原始池] --> O2[每日维护流程
-评分 / 筛选 / 吸收]
-        O2 --> O3[MEMORY.md
-主记忆层]
-        O3 --> O4[usage-log + decay-check
-强化 / 遗忘治理]
-    end
-```
+## Architecture
 
 ```text
 memory/YYYY-MM-DD.md
-    ↓
-首次评分（memory-scoring.py）
-    ↓
-高分条目筛选（当前规则：> 7）
-    ↓
-吸收进入 MEMORY.md
-    ↓
-遗忘检查（memory-decay-check.py）
-    ↓
-待确认清理
+  ↓
+memory-scoring.py
+  ↓
+candidate (importance >= 7)
+  ↓
+memory-consolidation.py
+  ↓
+MEMORY.md
+  ↓
+memory-decay-check.py
+  ↓
+forgotten items / expired files / pruning suggestions
 ```
 
-### 核心分层
+Daily review is handled separately:
 
-| 层级 | 文件 | 作用 |
-|------|------|------|
-| 日常记忆层 | `memory/*.md` | 原始记忆池，按条目首次评分 |
-| 主记忆层 | `MEMORY.md` | 长期沉淀记忆，供检索与回忆 |
-| 强化层 | `memory/usage-log.json` | 记录搜索命中 / 引用使用 |
-| 清理层 | `memory/decay-report.json` | 输出遗忘候选与过期文件 |
-
----
-
-## v2.2 工作流（当前推荐）
-
-### 任务 0：分析使用日志
-脚本：`memory-usage-tracker.py --analyze`
-
-作用：
-- 汇总 search hit / citation 记录
-- 为后续记忆强化提供参考
-
-### 任务 1：为 daily memory 条目评分
-脚本：`memory-scoring.py`
-
-作用：
-- 扫描 `memory/*.md`
-- 为尚未评分的条目首次评分
-- **不直接重评 `MEMORY.md`**
-
-### 任务 2：吸收高分条目
-由维护流程执行：
-- 读取已评分条目
-- 当前规则：**得分 > 7** 的条目吸收入 `MEMORY.md`
-
-### 任务 3：遗忘检查
-脚本：`memory-decay-check.py`
-
-作用：
-- 检查 `MEMORY.md` 中是否有低于阈值的条目
-- 检查 `memory/` 中是否有超过 30 天的过期文件
-- 生成待确认清单
-
-### 任务 4：确认后清理
-原则：
-- 先生成报告
-- 人工确认
-- 使用可恢复方式清理（如 `trash`）
+```text
+daily-meditation
+  ↓
+review yesterday
+  ↓
+write new insights back to the dated daily memory file
+  ↓
+wait for the next maintenance cycle to score and consolidate
+```
 
 ---
 
-## 评分机制（v2.2）
-
-### 1. 日常记忆：首次评分
-`memory/*.md` 中的条目按“标题 + 正文”首次评分。
-
-### 2. 当前规则的方向
-- **系统升级 / 核心修复 / 机制调整**：倾向高分
-- **普通技术事项 / 工作记录**：中等分
-- **纯文档整理 / 汇报 / 草案**：中低分，但不至于被一刀切压死
-
-### 3. 当前吸收阈值
-- **`> 7`** → 候选吸收进 `MEMORY.md`
-
-### 4. 为什么这样设计
-这是一个刻意保守的阈值：
-- 防止主记忆被日常碎片污染
-- 让真正有长期价值的事项自然浮上来
-- 让主记忆更像“长期心智结构”，而不是简单日志归档
-
----
-
-## 遗忘机制
-
-### 对 `MEMORY.md`
-- 当条目评分低于阈值时，进入遗忘候选
-- 核心记忆长期保留
-
-### 对 `memory/*.md`
-- daily memory 作为原始池，不做复杂重评
-- 超过一定时长的历史文件可进入清理候选
-
-### 核心原则
-- **先列清单，再清理**
-- **人工确认优先于自动删除**
-
-这个设计背后的精神并不是“删掉旧东西”，而是：
-
-> 让系统逐渐摆脱噪音，保留真正能塑造长期认知的内容。
-
----
-
-## 文件结构
+## Repository layout
 
 ```text
 openclaw-memory-system/
@@ -310,160 +67,145 @@ openclaw-memory-system/
 ├── memory-bionics-system.md
 ├── scripts/
 │   ├── memory-scoring.py
+│   ├── memory-consolidation.py
 │   ├── memory-decay-check.py
 │   ├── memory-usage-tracker.py
-│   └── daily-memory-maintenance-instructions.md
+│   ├── daily-memory-maintenance-instructions.md
+│   └── daily-meditation-instructions.md
 └── examples/
     └── decay-report.json.example
 ```
 
-部署到 OpenClaw 工作区后的典型结构：
+---
 
-```text
-~/.openclaw/workspace/
-├── MEMORY.md
-├── memory/
-│   ├── YYYY-MM-DD.md
-│   ├── usage-log.json
-│   └── decay-report.json
-└── scripts/
-    ├── memory-scoring.py
-    ├── memory-decay-check.py
-    ├── memory-usage-tracker.py
-    └── daily-memory-maintenance-instructions.md
-```
+## Core file responsibilities
+
+### `memory/YYYY-MM-DD.md`
+Daily memory source files.
+
+Use them for:
+- raw events
+- debugging traces
+- reflections
+- drafts before long-term consolidation
+
+### `MEMORY.md`
+Long-term memory index.
+
+Use it for:
+- stable facts
+- important decisions
+- reusable rules
+- distilled long-term cognition
+
+Do **not** use it as a design document.
+
+### `memory-bionics-system.md`
+The formal system specification.
+
+Use it to understand:
+- system boundaries
+- file roles
+- cron responsibilities
+- end-to-end flow
+- handoff guidance
 
 ---
 
-## 安装与使用
+## Scripts
 
-### 环境要求
-- Python 3.10+
-- OpenClaw 工作区
-- 仅依赖 Python 标准库
+### `memory-scoring.py`
+Front-end scoring.
 
-### 安装步骤
+Responsibilities:
+- score newly added daily memory entries
+- mark candidate priority
+- support dry-run validation
+
+Current behavior:
+- candidate threshold = `importance >= 7`
+- dynamic entry score cap = `10`
+- supports `--dry-run`, `--explain`, `--recent-days`
+
+### `memory-consolidation.py`
+Back-end consolidation.
+
+Responsibilities:
+- read scored daily memory candidates
+- classify entry type (`fact`, `decision`, `rule`, `event`, `doc`, `log`)
+- judge long-term value
+- distill and insert into `MEMORY.md`
+- avoid duplicate insertions
+
+### `memory-decay-check.py`
+Governance and forgetting audit.
+
+Responsibilities:
+- detect forgotten main-memory entries
+- detect expired daily-memory files
+- generate pruning suggestions
+- suggest low-reuse event cleanup and merge opportunities
+
+### `memory-usage-tracker.py`
+Tracks usage signals such as search hits and citations.
+
+---
+
+## Cron roles
+
+### `daily-memory-maintenance`
+Runs the formal maintenance pipeline:
+- usage analysis
+- scoring
+- consolidation
+- governance audit
+
+### `daily-meditation`
+Runs the reflective review pipeline:
+- review yesterday
+- generate lessons / improvements / plans
+- write insight material back to the corresponding dated daily memory file
+- publish diary or summary if needed
+
+Important rule:
+
+> `daily-meditation` should not write directly into `MEMORY.md`.
+
+---
+
+## Public usage model
+
+This repository is intentionally kept generic and sanitized.
+
+It does **not** include:
+- private identities
+- private user ids
+- personal credentials
+- private service endpoints
+- local machine-specific memory content
+
+You are expected to adapt the scripts and instruction files to your own OpenClaw workspace.
+
+---
+
+## Suggested handoff sequence
+
+If a new agent or maintainer needs to take over, read in this order:
+
+1. `README.md`
+2. `memory-bionics-system.md`
+3. `scripts/daily-memory-maintenance-instructions.md`
+4. `scripts/daily-meditation-instructions.md`
+5. dry-run the core pipeline:
 
 ```bash
-git clone https://github.com/Suidge/openclaw-memory-system.git
-cd openclaw-memory-system
-
-cp scripts/*.py ~/.openclaw/workspace/scripts/
-cp scripts/*.md ~/.openclaw/workspace/scripts/
-cp memory-bionics-system.md ~/.openclaw/workspace/
+python3 scripts/memory-scoring.py --dry-run --explain --recent-days 3
+python3 scripts/memory-consolidation.py --dry-run --recent-days 3
+python3 scripts/memory-decay-check.py --dry-run
 ```
-
-### 本地验证
-
-```bash
-python3 ~/.openclaw/workspace/scripts/memory-scoring.py
-python3 ~/.openclaw/workspace/scripts/memory-decay-check.py --dry-run
-python3 ~/.openclaw/workspace/scripts/memory-usage-tracker.py --analyze
-```
-
----
-
-## 目录约定（重要）
-
-### `memory/` 目录只放标准 daily memory
-推荐放：
-- `YYYY-MM-DD.md`
-- 规范日期前缀的每日记忆日志
-
-不推荐放：
-- 配置学习笔记
-- 专题说明文档
-- 部署备忘录
-- 任意杂项 Markdown
-
-### 其他笔记放哪里？
-建议放到：
-- macOS `~/Documents/`
-- 项目自己的 docs 目录
-
-这样可以避免污染记忆维护流程。
-
----
-
-## 与 OpenViking / 多模态方案的关系
-
-本仓库当前主线仍然是：
-- **Markdown 记忆治理**
-- **daily memory → MEMORY.md 的分层沉淀**
-
-如果后续接入 OpenViking / 百炼 VLM / 本地 embedding，建议采用：
-- Markdown 仍作为真相源
-- 外部系统只做索引与检索增强
-- 不直接回写主记忆 Markdown
-
-换句话说：
-> 先把记忆治理做好，再把检索与多模态能力外挂上去。
-
----
-
-## 长期方向：让 AI 形成“人格化的长期记忆”
-
-这个项目真正想触碰的，不只是工程问题，而是一个更长线的问题：
-
-### **AI 的长期记忆，最终不应只是检索系统，而应逐步接近一种拟人的认知结构。**
-
-这不意味着机械复制人类，而是意味着：
-- AI 对“什么重要”有稳定偏向
-- AI 能从重复事件中形成长期经验
-- AI 会把短期经历沉淀成长期判断
-- AI 的记忆不再只是原样存档，而是开始具有“人格化秩序”
-
-在这个意义上，拟人并不是装饰性的表达，而是未来记忆系统演化的一条关键方向。
-
----
-
-## 当前已验证的方向
-
-在实际使用中，以下方向已证明合理：
-
-- 将 `memory/` 收紧为标准 daily memory 目录
-- 让评分脚本只做“首次评分”
-- 让高分条目通过维护流程进入 `MEMORY.md`
-- 让文档类条目与系统实现类条目在评分上被区分对待
-- 先验证稳定性，再推进 OpenViking / VLM / embedding 增强
-
----
-
-## 不包含的内容
-
-本仓库 README 与脚本刻意不包含：
-- 个人 API Key
-- 用户 ID
-- 私有聊天目标
-- 个人设备路径细节之外的隐私内容
-- 私有主记忆内容
-
-如果你要在自己的环境里使用，请自行填入：
-- cron 目标投递渠道
-- 你的 OpenClaw 路径
-- 私有集成配置
-
----
-
-## 未来方向
-
-### v2.x
-- 继续观察评分与吸收逻辑稳定性
-- 优化关键词规则
-- 继续验证 daily memory 清理策略
-
-### v3.x
-- OpenViking 旁路验证
-- 多模态资源检索增强
-- 本地 embedding + 云端 VLM 的轻量组合
-- 在工程上继续向“拟人的长期记忆结构”靠近
 
 ---
 
 ## License
 
 MIT
-
----
-
-如果你也在做 AI 助手的长期记忆，不妨从“如何遗忘”开始，而不是从“如何塞更多记忆”开始。🧠

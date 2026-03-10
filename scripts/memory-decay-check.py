@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 记忆遗忘检查脚本 (v2.0)
 检查 MEMORY.md 动态记忆区的条目，筛选达到遗忘阈值的条目
 
@@ -9,323 +10,238 @@
 作者：银月
 版本：2.0
 最后更新：2026-03-08
+=======
+Memory governance audit (v2.3)
+Checks forgotten entries, expired daily-memory files, and pruning suggestions.
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
 """
 
-import os
-import re
+from __future__ import annotations
+
+import argparse
 import json
 import logging
-import argparse
-import tempfile
+import os
+import re
 import sys
-from datetime import datetime, timezone, timedelta
-from typing import List, Dict, Any
+import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-# ============================================================================
-# 常量配置
-# ============================================================================
+FORGOTTEN_THRESHOLD = 2
+CORE_MEMORY_THRESHOLD = 11
+FILE_EXPIRY_DAYS = 30
+LOW_REUSE_EVENT_MAX_IMPORTANCE = 8
+LOW_REUSE_EVENT_MIN_DAYS = 7
+TZ = timezone(timedelta(hours=8))
 
-FORGOTTEN_THRESHOLD: int = 2  # 遗忘阈值（MEMORY.md 条目）
-CORE_MEMORY_THRESHOLD: int = 11  # 核心记忆阈值
-FILE_EXPIRY_DAYS: int = 30  # memory/ 文件过期天数
-
-# 路径定义
 WORKSPACE_DIR = Path.home() / ".openclaw" / "workspace"
 MEMORY_FILE = WORKSPACE_DIR / "MEMORY.md"
 REPORT_PATH = WORKSPACE_DIR / "memory" / "decay-report.json"
 LOG_PATH = WORKSPACE_DIR / "memory" / "forget-check.log"
 MEMORY_DIR = WORKSPACE_DIR / "memory"
 
-# 预编译正则表达式
-MEMORY_ENTRY_PATTERN = re.compile(
-    r'(####\s+(?P<date>\d{4}-\d{2}-\d{2}|\d{4}-W\d+)[^\n]*)'
-    r'\s*<!--\s*importance:\s*(?P<importance>\d+)\s*-->'
-)
 DATE_PATTERN = re.compile(r'(\d{4}-\d{2}-\d{2})')
 WEEK_PATTERN = re.compile(r'(\d{4}-W\d{2})')
+ENTRY_PATTERN = re.compile(r'(####\s+[^\n]*)\s*<!--\s*importance:\s*(\d+)\s*-->')
+RULE_PATTERNS = [r'规则', r'原则', r'铁律', r'必须', r'禁止', r'规范', r'标准']
+DECISION_PATTERNS = [r'决策', r'决定', r'选择', r'切换', r'回退', r'迁移', r'统一', r'采用', r'放弃']
+DOC_PATTERNS = [r'文档', r'修订', r'草案', r'汇报', r'报告', r'方案', r'计划']
+LOG_PATTERNS = [r'测试', r'验证', r'日志', r'命令', r'输出', r'commit', r'\bgit\b(?!hub)']
 
+<<<<<<< HEAD
 # 时区常量
 TZ_SHANGHAI = timezone(timedelta(hours=8))
 
 # ============================================================================
 # 日志配置
 # ============================================================================
+=======
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
 
 def setup_logging(verbose: bool = False) -> None:
-    """配置日志系统"""
     level = logging.DEBUG if verbose else logging.INFO
-    format_str = '%(asctime)s [%(levelname)s] %(message)s'
-    date_format = '%Y-%m-%d %H:%M:%S'
-    
-    logging.root.handlers = []
-    
-    # 确保日志目录存在
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    
+    logging.root.handlers = []
     file_handler = logging.FileHandler(LOG_PATH, encoding='utf-8')
-    file_handler.setLevel(level)
-    file_handler.setFormatter(logging.Formatter(format_str, datefmt=date_format))
-    
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(level)
-    console_handler.setFormatter(logging.Formatter(format_str, datefmt=date_format))
-    
     logging.root.setLevel(level)
     logging.root.addHandler(file_handler)
     logging.root.addHandler(console_handler)
 
-# ============================================================================
-# 核心函数
-# ============================================================================
 
 def parse_date_from_title(title: str) -> datetime:
-    """从标题解析日期"""
-    tz_sh = TZ_SHANGHAI
-    
     date_match = DATE_PATTERN.search(title)
     if date_match:
         try:
-            return datetime.strptime(date_match.group(1), '%Y-%m-%d').replace(tzinfo=tz_sh)
+            return datetime.strptime(date_match.group(1), '%Y-%m-%d').replace(tzinfo=TZ)
         except ValueError:
             pass
-    
     week_match = WEEK_PATTERN.search(title)
     if week_match:
         try:
-            return datetime.strptime(week_match.group(1) + '-1', '%G-W%V-%u').replace(tzinfo=tz_sh)
+            return datetime.strptime(week_match.group(1) + '-1', '%G-W%V-%u').replace(tzinfo=TZ)
         except ValueError:
             pass
-    
-    return datetime.now(tz_sh)
+    return datetime.now(TZ)
 
 
 def calculate_days_old(title: str) -> int:
-    """计算条目存在天数"""
-    entry_date = parse_date_from_title(title)
-    now = datetime.now(TZ_SHANGHAI)
-    return max(0, (now - entry_date).days)
+    return max(0, (datetime.now(TZ) - parse_date_from_title(title)).days)
+
+
+def strip_title(raw: str) -> str:
+    title = re.sub(r'^#{1,6}\s*', '', raw).strip()
+    title = re.sub(r'\s*<!--.*?-->', '', title).strip()
+    return title
+
+
+def normalize_title(title: str) -> str:
+    text = strip_title(title).lower()
+    text = re.sub(r'\d{4}-\d{2}-\d{2}\s*', '', text)
+    text = re.sub(r'[（(].*?[）)]', '', text)
+    return re.sub(r'\s+', '', text)
+
+
+def classify_memory_entry(title: str, body: str) -> str:
+    text = f"{title}\n{body}".lower()
+    if any(re.search(p, text) for p in RULE_PATTERNS):
+        return 'rule'
+    if any(re.search(p, text) for p in DECISION_PATTERNS):
+        return 'decision'
+    if any(re.search(p, text) for p in DOC_PATTERNS):
+        return 'doc'
+    if any(re.search(p, text) for p in LOG_PATTERNS):
+        return 'log'
+    return 'event'
 
 
 def parse_memory_entries(content: str) -> List[Dict[str, Any]]:
-    """
-    解析 MEMORY.md 动态记忆区的条目
-    
-    Args:
-        content: MEMORY.md 文件内容
-    
-    Returns:
-        解析后的记忆条目列表
-    """
     entries: List[Dict[str, Any]] = []
-    
     dynamic_section = content.split('## 📅 动态记忆区')
     if len(dynamic_section) < 2:
-        logging.warning("未找到动态记忆区")
         return entries
-    
     dynamic_content = dynamic_section[1]
-    
-    for match in MEMORY_ENTRY_PATTERN.finditer(dynamic_content):
-        title = match.group(1).strip()
-        importance_str = match.group('importance')
-        importance = int(importance_str)
-        
-        # 清理标题（移除 # 和 HTML 注释）
-        title_clean = re.sub(r'#{1,6}\s*', '', title)
-        title_clean = re.sub(r'\s*<!--.*?-->', '', title_clean).strip()
-        
-        # 计算天数（使用原始标题，因为日期在 # 后面）
-        days_old = calculate_days_old(title)
-        
-        # 判断是否核心记忆和是否遗忘
-        is_core = importance >= CORE_MEMORY_THRESHOLD
-        is_forgotten = importance < FORGOTTEN_THRESHOLD
-        
+    matches = list(ENTRY_PATTERN.finditer(dynamic_content))
+    for idx, match in enumerate(matches):
+        raw_title = match.group(1).strip()
+        importance = int(match.group(2))
+        start_pos = match.end()
+        end_pos = matches[idx + 1].start() if idx + 1 < len(matches) else len(dynamic_content)
+        body = dynamic_content[start_pos:end_pos].strip()
+        title_clean = strip_title(raw_title)
+        days_old = calculate_days_old(raw_title)
+        entry_type = classify_memory_entry(title_clean, body)
         entries.append({
-            "title": title_clean,
-            "importance": importance,
-            "days_old": days_old,
-            "is_core_memory": is_core,
-            "is_forgotten": is_forgotten
+            'title': title_clean,
+            'importance': importance,
+            'days_old': days_old,
+            'body': body,
+            'entry_type': entry_type,
+            'is_core_memory': importance >= CORE_MEMORY_THRESHOLD,
+            'is_forgotten': importance < FORGOTTEN_THRESHOLD,
+            'normalized_title': normalize_title(title_clean),
         })
-    
-    logging.debug(f"解析到 {len(entries)} 个记忆条目")
     return entries
 
 
 def check_expired_files() -> List[Dict[str, Any]]:
-    """
-    检查 memory/ 目录下超过 30 天的日志文件（支持多种日期格式）
-    
-    支持的格式：
-    - YYYY-MM-DD.md（日常记忆）
-    - YYYY-WXX.md（周报）
-    - YYYY-MM-DD-HHMM.md（带时间戳的记忆）
-    
-    Returns:
-        过期文件列表
-    """
-    expired_files: List[Dict[str, Any]] = []
-    
-    if not MEMORY_DIR.exists():
-        logging.debug(f"记忆目录不存在：{MEMORY_DIR}")
-        return expired_files
-    
-    for file_path in MEMORY_DIR.glob("*.md"):
+    expired: List[Dict[str, Any]] = []
+    for file_path in MEMORY_DIR.glob('*.md'):
         if file_path.name == 'MEMORY.md':
             continue
-        
-        file_date = None
-        
-        # 尝试匹配 YYYY-MM-DD
-        date_match = DATE_PATTERN.match(file_path.stem)
-        if date_match:
+        file_date: Optional[datetime] = None
+        m = DATE_PATTERN.match(file_path.stem)
+        if m:
             try:
-                file_date = datetime.strptime(date_match.group(1), '%Y-%m-%d')
+                file_date = datetime.strptime(m.group(1), '%Y-%m-%d').replace(tzinfo=TZ)
             except ValueError:
                 pass
-        
-        # 尝试匹配 YYYY-WXX（周报）
         if file_date is None:
-            week_match = WEEK_PATTERN.match(file_path.stem)
-            if week_match:
+            m = WEEK_PATTERN.match(file_path.stem)
+            if m:
                 try:
-                    # 解析为该周的周一
-                    file_date = datetime.strptime(week_match.group(1) + '-1', '%G-W%V-%u')
+                    file_date = datetime.strptime(m.group(1) + '-1', '%G-W%V-%u').replace(tzinfo=TZ)
                 except ValueError:
                     pass
-        
-        # 尝试匹配 YYYY-MM-DD-HHMM（带时间戳）
         if file_date is None:
-            timestamp_match = re.match(r'(\d{4}-\d{2}-\d{2})-\d{4}', file_path.stem)
-            if timestamp_match:
-                try:
-                    file_date = datetime.strptime(timestamp_match.group(1), '%Y-%m-%d')
-                except ValueError:
-                    pass
-        
-        # 如果无法解析日期，记录警告并跳过
-        if file_date is None:
-            logging.warning(f"无法解析文件日期，跳过：{file_path.name}")
             continue
-        
-        # 计算天数
-        tz_sh = TZ_SHANGHAI
-        now = datetime.now(tz_sh)
-        if file_date.tzinfo is None:
-            file_date = file_date.replace(tzinfo=tz_sh)
-        
-        days_old = max(0, (now - file_date).days)
+        days_old = max(0, (datetime.now(TZ) - file_date).days)
         if days_old > FILE_EXPIRY_DAYS:
-            expired_files.append({
-                "filename": file_path.name,
-                "filepath": str(file_path),
-                "days_old": days_old,
-                "reason": f"file age ({days_old} days) > threshold ({FILE_EXPIRY_DAYS} days)"
-            })
-    
-    return expired_files
+            expired.append({'filename': file_path.name, 'filepath': str(file_path), 'days_old': days_old})
+    return expired
 
 
-def check_forgotten_memories(dry_run: bool = False) -> Dict[str, Any]:
-    """
-    检查遗忘条目（MEMORY.md 条目 + memory/ 过期文件）
-    
-    Args:
-        dry_run: 是否仅检查不生成报告
-    
-    Returns:
-        检查结果
-    """
-    results: Dict[str, Any] = {
-        "check_time": datetime.now(TZ_SHANGHAI).isoformat(),
-        "total_entries": 0,
-        "core_memory_count": 0,
-        "normal_count": 0,
-        "forgotten_entries": [],
-        "expired_files": [],  # 新增：过期文件
-        "protected_entries": [],
-        "summary": {}
-    }
-    
-    if not MEMORY_FILE.exists():
-        logging.error(f"MEMORY.md 不存在：{MEMORY_FILE}")
-        return results
-    
-    try:
-        content = MEMORY_FILE.read_text(encoding='utf-8')
-        logging.debug(f"成功读取 MEMORY.md ({len(content)} 字节)")
-    except PermissionError as e:
-        logging.error(f"读取失败（权限问题）：{MEMORY_FILE} - {e}")
-        return results
-    except UnicodeDecodeError as e:
-        logging.error(f"读取失败（编码问题）：{MEMORY_FILE} - {e}")
-        return results
-    except Exception as e:
-        logging.error(f"读取失败：{MEMORY_FILE} - {e}")
-        return results
-    
-    # 解析记忆条目
-    entries = parse_memory_entries(content)
-    results["total_entries"] = len(entries)
-    
-    # 分类处理（MEMORY.md 条目）
+def detect_duplicate_groups(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    groups: Dict[str, List[Dict[str, Any]]] = {}
     for entry in entries:
-        if entry["is_core_memory"]:
-            results["core_memory_count"] += 1
-            results["protected_entries"].append(entry)
-        else:
-            results["normal_count"] += 1
-            
-            if entry["is_forgotten"]:
-                results["forgotten_entries"].append(entry)
-                logging.info(f"发现遗忘条目：{entry['title']} (评分：{entry['importance']})")
-    
-    # 检查过期文件（memory/ 文件夹）
-    results["expired_files"] = check_expired_files()
-    if results["expired_files"]:
-        logging.info(f"发现 {len(results['expired_files'])} 个过期日志文件")
-    
-    # 生成摘要
-    results["summary"] = {
-        "total_entries": results["total_entries"],
-        "core_memory_protected": results["core_memory_count"],
-        "normal_memory": results["normal_count"],
-        "forgotten_entries_count": len(results["forgotten_entries"]),
-        "expired_files_count": len(results["expired_files"]),
-        "forgotten_entries": [e["title"] for e in results["forgotten_entries"]],
-        "expired_files": [f["filename"] for f in results["expired_files"]]
+        if re.fullmatch(r'(\d{4}-\d{2}-\d{2}|\d{4}-W\d{2})', entry['title'].strip()):
+            continue
+        groups.setdefault(entry['normalized_title'], []).append(entry)
+    return [
+        {'canonical_title': g[0]['title'], 'count': len(g), 'titles': [e['title'] for e in g]}
+        for g in groups.values() if len(g) >= 2
+    ]
+
+
+def detect_low_reuse_events(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return [
+        {'title': e['title'], 'importance': e['importance'], 'days_old': e['days_old']}
+        for e in entries
+        if not e['is_core_memory'] and e['entry_type'] == 'event' and e['importance'] <= LOW_REUSE_EVENT_MAX_IMPORTANCE and e['days_old'] >= LOW_REUSE_EVENT_MIN_DAYS
+    ]
+
+
+def detect_merge_suggestions(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    for typ in ('rule', 'decision'):
+        group = [e for e in entries if e['entry_type'] == typ]
+        if len(group) >= 3:
+            out.append({'type': typ, 'count': len(group), 'titles': [e['title'] for e in group[:8]]})
+    return out
+
+
+def check_memory_governance(dry_run: bool = False) -> Dict[str, Any]:
+    results: Dict[str, Any] = {
+        'check_time': datetime.now(TZ).isoformat(),
+        'forgotten_entries': [],
+        'expired_files': [],
+        'duplicate_groups': [],
+        'low_reuse_event_candidates': [],
+        'merge_suggestions': [],
+        'summary': {},
     }
-    
-    # 保存报告（非 dry-run 模式）
+    content = MEMORY_FILE.read_text(encoding='utf-8')
+    entries = parse_memory_entries(content)
+    results['forgotten_entries'] = [e for e in entries if e['is_forgotten']]
+    results['expired_files'] = check_expired_files()
+    results['duplicate_groups'] = detect_duplicate_groups(entries)
+    results['low_reuse_event_candidates'] = detect_low_reuse_events(entries)
+    results['merge_suggestions'] = detect_merge_suggestions(entries)
+    results['summary'] = {
+        'total_entries': len(entries),
+        'core_memory_protected': len([e for e in entries if e['is_core_memory']]),
+        'normal_memory': len([e for e in entries if not e['is_core_memory']]),
+        'forgotten_entries_count': len(results['forgotten_entries']),
+        'expired_files_count': len(results['expired_files']),
+        'duplicate_groups_count': len(results['duplicate_groups']),
+        'low_reuse_event_candidates_count': len(results['low_reuse_event_candidates']),
+        'merge_suggestions_count': len(results['merge_suggestions']),
+        'forgotten_entries': [e['title'] for e in results['forgotten_entries']],
+        'expired_files': [f['filename'] for f in results['expired_files']],
+    }
     if not dry_run:
-        try:
-            REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        except PermissionError as e:
-            logging.error(f"创建目录失败（权限问题）：{REPORT_PATH.parent} - {e}")
-            return results
-        
-        try:
-            fd, tmp_path = tempfile.mkstemp(suffix='.json', dir=REPORT_PATH.parent)
-            try:
-                with os.fdopen(fd, 'w', encoding='utf-8') as f:
-                    json.dump(results, f, indent=2, ensure_ascii=False)
-                os.chmod(tmp_path, 0o600)
-                os.replace(tmp_path, REPORT_PATH)
-                logging.info(f"报告已保存：{REPORT_PATH}")
-            except Exception:
-                if os.path.exists(tmp_path):
-                    os.unlink(tmp_path)
-                raise
-        except PermissionError as e:
-            logging.error(f"写入报告失败（权限问题）：{REPORT_PATH} - {e}")
-        except Exception as e:
-            logging.error(f"写入报告失败：{REPORT_PATH} - {e}")
-    
+        REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp_path = tempfile.mkstemp(suffix='.json', dir=REPORT_PATH.parent)
+        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        os.chmod(tmp_path, 0o600)
+        os.replace(tmp_path, REPORT_PATH)
     return results
 
 
+<<<<<<< HEAD
 def print_report(results: Dict[str, Any], args: argparse.Namespace) -> None:
     """打印控制台报告（包含遗忘条目和过期文件）"""
     print("\n🌙 银月记忆遗忘检查报告")
@@ -387,13 +303,28 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('-v', '--verbose', action='store_true', help='启用 DEBUG 级别日志')
     parser.add_argument('--dry-run', action='store_true', help='仅检查，不生成报告文件')
     
+=======
+def print_report(results: Dict[str, Any]) -> None:
+    print(f"total: {results['summary']['total_entries']}")
+    print(f"forgotten: {results['summary']['forgotten_entries_count']}")
+    print(f"expired files: {results['summary']['expired_files_count']}")
+    print(f"duplicate groups: {results['summary']['duplicate_groups_count']}")
+    print(f"low reuse events: {results['summary']['low_reuse_event_candidates_count']}")
+    print(f"merge suggestions: {results['summary']['merge_suggestions_count']}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description='Memory governance audit (v2.3)')
+    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('--dry-run', action='store_true')
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
     return parser.parse_args()
 
 
 def main() -> int:
-    """主函数"""
     args = parse_args()
     setup_logging(args.verbose)
+<<<<<<< HEAD
     
     logging.info("🌙 银月开始检查记忆遗忘...")
     
@@ -410,6 +341,18 @@ def main() -> int:
         logging.info("无需清理的内容")
         print("\n✅ 无需清理的内容")
         return 0
+=======
+    results = check_memory_governance(dry_run=args.dry_run)
+    print_report(results)
+    governance_items = (
+        len(results['forgotten_entries'])
+        + len(results['expired_files'])
+        + len(results['duplicate_groups'])
+        + len(results['low_reuse_event_candidates'])
+        + len(results['merge_suggestions'])
+    )
+    return 1 if governance_items > 0 else 0
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
 
 
 if __name__ == '__main__':

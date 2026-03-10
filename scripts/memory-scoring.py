@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 记忆重要性评分脚本 (v2.2)
 为 daily memory 条目执行首次评分
 
@@ -16,20 +17,30 @@
 作者：银月
 版本：2.2
 最后更新：2026-03-08
+=======
+Memory scoring script (v2.3.1)
+Scores daily memory entries and marks candidate priority.
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
 """
 
-import os
+from __future__ import annotations
+
+import argparse
 import re
-import json
-import math
-from datetime import datetime, timezone, timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Dict, List
+from typing import Iterable, List, Sequence, Tuple
 
 MEMORY_DIR = Path.home() / ".openclaw" / "workspace" / "memory"
-USAGE_LOG = Path.home() / ".openclaw" / "workspace" / "memory" / "usage-log.json"
-MEMORY_FILE = Path.home() / ".openclaw" / "workspace" / "MEMORY.md"
+CANDIDATE_THRESHOLD = 7
+MAX_DYNAMIC_SCORE = 10
+TZ = timezone(timedelta(hours=8))
+DATE_FILE_RE = re.compile(r'(\d{4}-\d{2}-\d{2})\.md$')
+TITLE_HEADING_RE = re.compile(r'^(#{3,4}\s+[^\n]+)', re.M)
+IMPORTANCE_RE = re.compile(r'<!--\s*importance:\s*(\d+)\s*-->')
 
+<<<<<<< HEAD
 # 时区常量
 TZ_SHANGHAI = timezone(timedelta(hours=8))
 
@@ -57,27 +68,42 @@ KEYWORD_SCORES = [
     (r'问题|错误|bug|fix', 6),
     (r'日志|log|工作|任务|task', 5),
     (r'事件|发生|event', 5),
+=======
+POSITIVE_RULES: Sequence[Tuple[str, int, str]] = [
+    (r'记忆系统|主记忆|长期记忆|遗忘机制|吸收规则|评分机制|工作流|架构|机制', 2, 'system/mechanism'),
+    (r'长期|长期有效|长期影响|长期规则|长期约束|长期认知', 1, 'long-term'),
+    (r'决策|决定|选择|采用|放弃|回退|切换|迁移|统一', 2, 'decision/switch'),
+    (r'规则|原则|铁律|必须|禁止|约束|规范|标准', 1, 'rule'),
+    (r'修复|修正|优化|重构|升级|部署|落地|完成|启用|上线|发布', 1, 'completion/fix'),
+    (r'配置|环境变量|config|setup|部署|安装', 1, 'config'),
+    (r'错误|问题|bug|故障|失败|异常', 1, 'issue'),
+    (r'openclaw|cron|heartbeat|agent|context engine|legacy|lossless-claw', 1, 'system object'),
+]
+
+NEGATIVE_RULES: Sequence[Tuple[str, int, str]] = [
+    (r'文档版|修订版|草案|汇报|报告|整理版|说明文档|设计文档', 2, 'doc penalty'),
+    (r'读书笔记|学习笔记|复盘文稿|计划文稿|升级计划', 2, 'manuscript penalty'),
+    (r'测试|验证|试跑|演练|模拟|探针', 1, 'test penalty'),
+    (r'日志|log|输出|命令|终端|shell|trace', 1, 'log penalty'),
+    (r'commit|git|提交记录|变更记录', 1, 'commit penalty'),
+]
+
+GENERIC_TITLE_PATTERNS: Sequence[Tuple[str, int, str]] = [
+    (r'^#{3,4}\s*(问题与解答|其他观察到的情况|待处理|待排查|当前状态|当前配置|目标配置|技能信息|实战案例|当日重要事件|解决方案|修改步骤|风险检查|回滚方案|验证步骤)$', 2, 'generic title'),
+    (r'^#{3,4}\s*(任务\s*\d+|执行任务|注意事项|核心能力|笔记本信息)$', 2, 'container title'),
+    (r'^#{3,4}\s*.*(方向确认|调整记录|文档职责边界|文档口径澄清|文档调整记录).*$' , 2, 'design confirmation title'),
+    (r'^#{3,4}\s*.*(手动更新|恢复验证|查询修复|失败修复|提交（\d+\s*个）|提交\(|提交（|提交\b).*$' , 2, 'process-action title'),
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
 ]
 
 
-def load_usage_bonus() -> Dict[str, float]:
-    """
-    加载加分数据
-    
-    Returns:
-        Dict[str, float]: 条目标题到加分的映射字典
-    """
-    if not USAGE_LOG.exists():
-        return {}
-    try:
-        with open(USAGE_LOG, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        return {title: entry.get("bonus_score", 0.0) for title, entry in data.get("entries", {}).items()}
-    except Exception as e:
-        print(f"⚠️ 加载加分数据失败：{e}")
-        return {}
+@dataclass
+class ScoreExplanation:
+    score: int
+    reasons: List[str]
 
 
+<<<<<<< HEAD
 def calculate_keyword_score(content: str) -> int:
     """
     根据 daily memory 条目的标题与正文做首次评分。
@@ -228,49 +254,119 @@ def score_daily_log_entries(filepath: Path) -> List[str]:
     Returns:
         评分条目列表
     """
+=======
+@dataclass
+class ScoredEntry:
+    file: Path
+    title: str
+    score: int
+    candidate: bool
+    reasons: List[str]
+
+
+def clamp(value: int, low: int, high: int) -> int:
+    return max(low, min(high, value))
+
+
+def strip_comments(text: str) -> str:
+    return re.sub(r'\s*<!--.*?-->', '', text).strip()
+
+
+def parse_memory_file_date(filepath: Path) -> datetime | None:
+    match = DATE_FILE_RE.match(filepath.name)
+    if not match:
+        return None
+    return datetime.strptime(match.group(1), '%Y-%m-%d').replace(tzinfo=TZ)
+
+
+def iter_entry_slices(content: str) -> Iterable[Tuple[re.Match[str], int, int]]:
+    matches = list(TITLE_HEADING_RE.finditer(content))
+    for idx, match in enumerate(matches):
+        start_pos = match.end()
+        end_pos = matches[idx + 1].start() if idx + 1 < len(matches) else len(content)
+        yield match, start_pos, end_pos
+
+
+def calculate_keyword_score(content: str) -> ScoreExplanation:
+    text = content.lower()
+    title = content.split('\n', 1)[0].lower()
+    score = 5
+    reasons: List[str] = ['base=5']
+
+    for pattern, delta, label in POSITIVE_RULES:
+        if re.search(pattern, text):
+            score += delta
+            reasons.append(f'+{delta} {label}')
+
+    for pattern, delta, label in NEGATIVE_RULES:
+        if re.search(pattern, text):
+            score -= delta
+            reasons.append(f'-{delta} {label}')
+
+    for pattern, delta, label in GENERIC_TITLE_PATTERNS:
+        if re.search(pattern, title):
+            score -= delta
+            reasons.append(f'-{delta} {label}')
+
+    if re.search(r'文档|修订|草案|汇报|报告|整理', title):
+        score -= 1
+        reasons.append('-1 doc-title penalty')
+
+    system_design_hits = 0
+    for pattern in [
+        r'记忆系统|主记忆|长期记忆|遗忘机制|吸收规则|评分机制|工作流|架构|机制',
+        r'长期|长期有效|长期影响|长期规则|长期约束|长期认知',
+        r'规则|原则|铁律|必须|禁止|约束|规范|标准',
+    ]:
+        if re.search(pattern, text):
+            system_design_hits += 1
+    if system_design_hits >= 2:
+        score -= 1
+        reasons.append('-1 system/design cooling')
+    if system_design_hits >= 3:
+        score -= 1
+        reasons.append('-1 high-density cooling')
+
+    if len(content) > 1000:
+        score += 1
+        reasons.append('+1 long-content fallback')
+
+    final_score = clamp(score, 1, MAX_DYNAMIC_SCORE)
+    return ScoreExplanation(score=final_score, reasons=reasons)
+
+
+def score_daily_log_entries(filepath: Path, explain: bool = False, dry_run: bool = False) -> List[ScoredEntry]:
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
-    
-    # 匹配 ### 或 #### 标题格式
-    pattern = r'(#{3,4}\s+[^\n]+)'
-    matches = list(re.finditer(pattern, content))
-    
-    scored_entries = []
-    
-    for match in reversed(matches):
-        title = match.group(1).strip()
-        
-        # 检查是否已有评分
-        start_pos = int(match.end())
-        next_match = re.search(r'\n#{3,4}', content[start_pos:])
-        end_pos = start_pos + int(next_match.start()) if next_match else len(content)
-        
-        # 获取条目标题 + 标题下方的内容（不包括下一个标题）
-        entry_title = title
+
+    original_content = content
+    scored_entries: List[ScoredEntry] = []
+
+    for match, start_pos, end_pos in reversed(list(iter_entry_slices(content))):
+        raw_title = match.group(1).strip()
+        entry_title = strip_comments(raw_title)
         entry_body = content[start_pos:end_pos].strip()
         entry_content = entry_title + "\n" + entry_body
-        
-        if '<!-- importance:' in entry_content:
+
+        if IMPORTANCE_RE.search(entry_content):
             continue
-        
-        # 首次评分（关键词匹配：使用条目标题 + 下方内容）
-        importance = calculate_keyword_score(entry_content)
-        new_title = f"{title} <!-- importance: {importance} -->"
-        
-        start_idx = int(match.start(1))
-        end_idx = int(match.end(1))
-        content = content[:start_idx] + new_title + content[end_idx:]
-        
-        scored_entries.append(f"  - {title}: importance={importance} (首次)")
-    
+
+        explanation = calculate_keyword_score(entry_content)
+        candidate = explanation.score >= CANDIDATE_THRESHOLD
+        new_title = f"{raw_title} <!-- importance: {explanation.score} -->"
+        content = content[:match.start(1)] + new_title + content[match.end(1):]
+        scored_entries.append(
+            ScoredEntry(filepath, entry_title, explanation.score, candidate, explanation.reasons if explain else [])
+        )
+
     scored_entries.reverse()
-    
-    with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(content)
-    
+    if not dry_run and content != original_content:
+        filepath.write_text(content, encoding='utf-8')
     return scored_entries
 
 
+<<<<<<< HEAD
 def rescore_memory_md(usage_bonus_map: Dict[str, float]) -> List[str]:
     """
     预留：为 `MEMORY.md` 动态记忆区执行重评。
@@ -387,7 +483,41 @@ def main():
             print(f"  ... 还有 {len(rescored_entries) - 20} 个条目")
     
     print("\n" + "=" * 60)
+=======
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description='Score daily memory entries (v2.3.1)')
+    parser.add_argument('--explain', action='store_true')
+    parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--recent-days', type=int, default=None)
+    return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main() -> None:
+    args = parse_args()
+    files = sorted(p for p in MEMORY_DIR.glob('*.md') if p.name.endswith('.md'))
+    if args.recent_days is not None:
+        cutoff = datetime.now(TZ) - timedelta(days=args.recent_days)
+        files = [p for p in files if (parse_memory_file_date(p) is not None and parse_memory_file_date(p) >= cutoff)]
+
+    print(f'candidate threshold: {CANDIDATE_THRESHOLD}')
+    print(f'mode: {"dry-run" if args.dry_run else "apply"}')
+    print(f'files scanned: {len(files)}')
+
+    all_scored: List[ScoredEntry] = []
+    for filepath in files:
+        all_scored.extend(score_daily_log_entries(filepath, explain=args.explain, dry_run=args.dry_run))
+
+    candidates = [e for e in all_scored if e.candidate]
+    print(f'newly scored: {len(all_scored)}')
+    print(f'candidates: {len(candidates)}')
+    for entry in all_scored[:20]:
+        kind = 'candidate' if entry.candidate else 'normal'
+        print(f'- {entry.title}: {entry.score} [{kind}]')
+        if args.explain:
+            for reason in entry.reasons:
+                print(f'    {reason}')
+>>>>>>> b5b3385 (docs: publish sanitized v2.3 memory system update)
+
+
+if __name__ == '__main__':
     main()
