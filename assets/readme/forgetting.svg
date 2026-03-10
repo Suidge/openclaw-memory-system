@@ -1,0 +1,50 @@
+<svg width="1200" height="620" viewBox="0 0 1200 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#EFF6FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#bg)"/>
+
+  <text x="80" y="78" fill="#0F172A" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="800">Forgetting as compression</text>
+  <text x="80" y="112" fill="#475569" font-family="Arial, Helvetica, sans-serif" font-size="18">Memory quality is preserved by selective decay, review, and pruning.</text>
+
+  <rect x="82" y="170" width="520" height="330" rx="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="118" y="216" fill="#0F172A" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800">Decay curves</text>
+
+  <line x1="136" y1="450" x2="550" y2="450" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="136" y1="250" x2="136" y2="450" stroke="#94A3B8" stroke-width="2"/>
+
+  <text x="122" y="240" fill="#64748B" font-family="Arial, Helvetica, sans-serif" font-size="14">score</text>
+  <text x="552" y="472" fill="#64748B" font-family="Arial, Helvetica, sans-serif" font-size="14">time</text>
+
+  <path d="M150 280C230 286 300 292 392 302C452 309 501 314 548 320" stroke="#4F46E5" stroke-width="4" stroke-linecap="round"/>
+  <path d="M150 318C233 330 314 346 402 370C455 384 500 394 548 402" stroke="#0EA5E9" stroke-width="4" stroke-linecap="round"/>
+  <path d="M150 350C232 376 312 400 396 420C449 433 500 440 548 446" stroke="#F97316" stroke-width="4" stroke-linecap="round"/>
+  <path d="M150 258C250 258 350 258 548 258" stroke="#059669" stroke-width="4" stroke-linecap="round"/>
+
+  <rect x="360" y="236" width="184" height="26" rx="13" fill="#ECFDF5"/>
+  <text x="452" y="254" text-anchor="middle" fill="#047857" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700">core memory never decays</text>
+
+  <rect x="662" y="170" width="454" height="330" rx="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="696" y="216" fill="#0F172A" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800">Governance actions</text>
+
+  <rect x="698" y="258" width="172" height="52" rx="16" fill="#EEF2FF" stroke="#C7D2FE"/>
+  <text x="784" y="289" text-anchor="middle" fill="#4338CA" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">forgotten entries</text>
+
+  <rect x="908" y="258" width="172" height="52" rx="16" fill="#EFF6FF" stroke="#BFDBFE"/>
+  <text x="994" y="289" text-anchor="middle" fill="#1D4ED8" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">expired files</text>
+
+  <rect x="698" y="334" width="172" height="52" rx="16" fill="#FDF2F8" stroke="#FBCFE8"/>
+  <text x="784" y="365" text-anchor="middle" fill="#BE185D" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">duplicate groups</text>
+
+  <rect x="908" y="334" width="172" height="52" rx="16" fill="#FFF7ED" stroke="#FED7AA"/>
+  <text x="994" y="365" text-anchor="middle" fill="#C2410C" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">low-reuse events</text>
+
+  <rect x="803" y="410" width="172" height="52" rx="16" fill="#ECFEFF" stroke="#A5F3FC"/>
+  <text x="889" y="441" text-anchor="middle" fill="#0F766E" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">merge suggestions</text>
+
+  <text x="696" y="530" fill="#475569" font-family="Arial, Helvetica, sans-serif" font-size="17">Forgetting is not deletion for its own sake.</text>
+  <text x="696" y="556" fill="#475569" font-family="Arial, Helvetica, sans-serif" font-size="17">It is an active process for keeping long-term cognition compact and usable.</text>
+</svg>

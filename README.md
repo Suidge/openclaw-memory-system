@@ -52,33 +52,7 @@
 ### 2. 记忆巩固机制 (Memory Consolidation)
 
 <div align="center">
-
-```mermaid
-graph LR
-    subgraph Human["🧠 人类记忆巩固 (睡眠中)"]
-        A1["白天经历"] --> A2["海马体\n回放"]
-        A2 --> A3["提取\n核心模式"]
-        A3 --> A4["皮层\n存储"]
-    end
-    
-    subgraph OpenClaw["🤖 OpenClaw (daily-meditation)"]
-        B1["daily\nmemory"] --> B2["scoring\n评分"]
-        B2 --> B3["classify\n分类"]
-        B3 --> B4["distill\n提炼"]
-        B4 --> B5["MEMORY.md"]
-    end
-    
-    style A1 fill:#0984e3,color:white
-    style A2 fill:#0984e3,color:white
-    style A3 fill:#6c5ce7,color:white
-    style A4 fill:#a29bfe,color:white
-    style B1 fill:#0984e3,color:white
-    style B2 fill:#0984e3,color:white
-    style B3 fill:#6c5ce7,color:white
-    style B4 fill:#a29bfe,color:white
-    style B5 fill:#fdcb6e,color:black
-```
-
+  <img src="./assets/readme/consolidation.svg" alt="Memory consolidation" width="100%" />
 </div>
 
 **v2.3 核心升级**：
@@ -90,18 +64,7 @@ graph LR
 ### 3. 遗忘机制 (Forgetting Mechanism)
 
 <div align="center">
-
-```mermaid
-xychart-beta
-    title "🕰️ 记忆衰减曲线"
-    x-axis "时间 (天)" [0, 10, 20, 30, 40, 50, 60]
-    y-axis "重要性评分" 0 --> 12
-    line "7-10 分 (温和衰减 -0.01/天)" [10, 9.9, 9.8, 9.7, 9.6, 9.5, 9.4]
-    line "4-6 分 (正常衰减 -0.02/天)" [10, 9.8, 9.6, 9.4, 9.2, 9.0, 8.8]
-    line "1-3 分 (快速衰减 -0.03/天)" [10, 9.7, 9.4, 9.1, 8.8, 8.5, 8.2]
-    line "≥11 分 核心记忆 (永不衰减)" [11, 11, 11, 11, 11, 11, 11]
-```
-
+  <img src="./assets/readme/forgetting.svg" alt="Forgetting mechanism" width="100%" />
 </div>
 
 | 遗忘类型 | 人类机制 | OpenClaw 实现 |
