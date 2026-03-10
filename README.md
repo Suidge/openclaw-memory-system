@@ -38,14 +38,14 @@
 ```mermaid
 graph TB
     subgraph Human["🧠 人类大脑"]
-        H1[海马体<br/>短期记忆]
-        H2[大脑皮层<br/>长期记忆]
+        H1["海马体\n短期记忆"]
+        H2["大脑皮层\n长期记忆"]
         H1 -->|巩固 | H2
     end
     
     subgraph OpenClaw["🤖 OpenClaw"]
-        O1[memory/*.md<br/>原始经历/日志]
-        O2[MEMORY.md<br/>提炼认知/规则]
+        O1["memory/*.md\n原始经历/日志"]
+        O2["MEMORY.md\n提炼认知/规则"]
         O1 -->|consolidation| O2
     end
     
@@ -76,17 +76,16 @@ graph TB
 ```mermaid
 graph LR
     subgraph Human["🧠 人类记忆巩固 (睡眠中)"]
-        A1[白天经历] --> A2[海马体回放]
-        A2 --> A3[提取核心模式]
-        A3 --> A4[皮层存储]
-        A4 -.->|遗忘细节 | A5[ ]
+        A1["白天经历"] --> A2["海马体\n回放"]
+        A2 --> A3["提取\n核心模式"]
+        A3 --> A4["皮层\n存储"]
     end
     
     subgraph OpenClaw["🤖 OpenClaw (daily-meditation)"]
-        B1[daily memory] --> B2[scoring 评分]
-        B2 --> B3[classify 分类]
-        B3 --> B4[distill 提炼]
-        B4 --> B5[MEMORY.md]
+        B1["daily\nmemory"] --> B2["scoring\n评分"]
+        B2 --> B3["classify\n分类"]
+        B3 --> B4["distill\n提炼"]
+        B4 --> B5["MEMORY.md"]
     end
     
     style A1 fill:#0984e3,color:white
@@ -163,27 +162,27 @@ xychart-beta
 ```mermaid
 flowchart TD
     subgraph Daily["📝 Daily Memory Layer"]
-        D1[memory/YYYY-MM-DD.md<br/>原始经历 | 执行日志 | 反思草稿 | 临时笔记]
+        D1["memory/YYYY-MM-DD.md\n原始经历/执行日志/反思草稿/临时笔记"]
     end
     
     subgraph Scoring["memory-scoring.py"]
-        S1[重要性评分 | 候选标记]
+        S1["重要性评分\n候选标记"]
     end
     
     subgraph Candidate["候选过滤"]
-        C1[importance ≥ 7]
+        C1["importance ≥ 7"]
     end
     
     subgraph Consolidation["memory-consolidation.py"]
-        CS1[类型判断 | 价值评估 | 提炼固化]
+        CS1["类型判断/价值评估/提炼固化"]
     end
     
     subgraph Main["🧠 Main Memory Layer"]
-        M1[MEMORY.md<br/>长期事实 | 重要决策 | 可复用规则 | 提炼认知]
+        M1["MEMORY.md\n长期事实/重要决策/可复用规则/提炼认知"]
     end
     
     subgraph Decay["memory-decay-check.py"]
-        DC1[遗忘审计 | 清理建议]
+        DC1["遗忘审计/清理建议"]
     end
     
     Daily --> Scoring
