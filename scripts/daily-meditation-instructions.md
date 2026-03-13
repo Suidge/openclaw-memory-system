@@ -1,7 +1,7 @@
 # Daily Meditation Instructions (v2.3)
 
 ## Schedule
-Every day at 04:00 (Asia/Shanghai), reviewing **yesterday**.
+Every day at 02:00 (Asia/Shanghai), reviewing **yesterday**.
 
 ## Responsibilities
 The meditation job is the **review and insight production entrypoint**.
@@ -27,11 +27,17 @@ Example:
 - and reads `memory/2026-03-09.md`
 
 ### Step 2: generate insight material
-If new high-value reflections appear during review, write them back into the **corresponding dated daily-memory file**.
+If there is meaningful progress during review, write day-level material back into the **corresponding dated daily-memory file**.
+This layer should preserve more work texture than `MEMORY.md`: what moved forward, what changed, what was fixed, and how decisions converged.
+
+If new high-value reflections appear, include them there as well.
 
 Example:
-- running on March 10 at 04:00
+- running on March 10 at 02:00
 - write back to `memory/2026-03-09.md`
+
+A low-information day is allowed to produce no new dated file.
+But “not yet worthy of long-term memory” should not be treated as “not worth writing into daily memory.”
 
 Do **not** copy high-score items directly into `MEMORY.md`.
 

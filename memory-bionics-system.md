@@ -40,6 +40,11 @@ Use them for:
 - execution traces
 - incident notes
 - reflections and drafts
+- day-level work texture: what changed, what was tried, and how decisions evolved
+
+Important boundary:
+- daily memory should remain more raw and contextual than `MEMORY.md`
+- it is not required to compress everything into long-term conclusions at this layer
 
 ### `MEMORY.md`
 Main long-term memory file.
@@ -113,7 +118,9 @@ daily-meditation
   ↓
 review yesterday
   ↓
-write new insight material into the corresponding dated daily memory file
+if there is meaningful progress, write day-level material back into the corresponding dated daily memory file
+  ↓
+if there is no meaningful new material, the file may remain unchanged or absent for that date
   ↓
 wait for the next maintenance cycle
 ```
@@ -186,12 +193,16 @@ Reflective review entrypoint.
 Should handle:
 1. review yesterday
 2. generate lessons and improvements
-3. write new insight material back to the corresponding dated daily memory file
+3. write new day-level material back to the corresponding dated daily memory file when there is meaningful progress
 4. publish diary / summary if desired
 
-Important rule:
+Important rules:
 
 > `daily-meditation` must not directly write into `MEMORY.md`.
+>
+> A low-information day is allowed to produce no new dated daily-memory file.
+>
+> “Not yet worthy of long-term memory” should not be misread as “not worth recording in daily memory.”
 
 ---
 
