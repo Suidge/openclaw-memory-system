@@ -1,5 +1,12 @@
 # 🧠 OpenClaw Memory System | 仿生记忆系统
 
+> ⚠️ **DEPRECATED — This project is no longer maintained.**  
+> It has been superseded by **[Biomimetic Memory Architecture (BMA)](https://github.com/Suidge/biomimetic-memory-architecture)** — a complete, published OpenClaw skill that integrates structured memory, procedural learning (Lesson-Imprint), and automated retention/forgetting with Phase 2 compression and cold archiving.  
+>  
+> `clawhub install biomimetic-memory-architecture`
+
+---
+
 > **让 AI 拥有像人类一样的记忆能力**  
 > A biomimetic memory architecture for OpenClaw agents
 
